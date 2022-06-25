@@ -1,6 +1,7 @@
 package com.modeloanalitica.uahdatos.controlador;
 
 import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
 import com.modeloanalitica.uahdatos.modelo.Evento;
 import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,20 +33,33 @@ public class DatosController {
     public void cargarDatos() {
         Gson gson = new Gson();
 
+        String ficheroFail = "";
         String fichero = "";
 
-        try (BufferedReader br = new BufferedReader(new FileReader("C://Users/jcher/OneDrive/Desktop/Escuela/TFM/1--output-Friday-June-03-2022-07-46-27.json"))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                fichero += linea;
-            }
-            //System.out.println(fichero);
+        //try (BufferedReader br = new BufferedReader(new FileReader("C://Users/jcher/OneDrive/Desktop/Escuela/TFM/test/63--output-Monday-June-20-2022-16-04-12.json"))) {
+        //try (BufferedReader br = new BufferedReader(new FileReader("C://Users/jcher/OneDrive/Desktop/Escuela/TFM/test/243--output-Friday-May-27-2022-08-23-19.json"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("C://Users/jcher/OneDrive/Desktop/Escuela/TFM/test/801--output-Friday-June-03-2022-07-47-55.json"))) {
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    ficheroFail += linea;
+                }
+                System.out.println("fichero = " + ficheroFail);
+                int lastpos = ficheroFail.length();
+                fichero = ficheroFail.substring(160, lastpos - 1);
+                System.out.println("fichero arreglado = " + fichero);
 
-        } catch (FileNotFoundException ex) {
-            System.out.println(ex.getMessage());
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
+                while (fichero.indexOf("sensor") != -1){
+                    int pos = fichero.indexOf("sensor");
+                    fichero = fichero.substring(0, pos - 4) + "," + fichero.substring((pos - 4) + 163);
+                }
+
+                System.out.println("fichero arreglado = " + fichero);
+
+            } catch (FileNotFoundException ex) {
+                System.out.println(ex.getMessage());
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
 
         JsonParser parser = new JsonParser();
         Object object =  parser.parse(fichero);
@@ -61,112 +75,173 @@ public class DatosController {
             System.out.println(gsonObj.toString());
 
             // EVENTO
-            String type = gsonObj.get("type").getAsString();
+            if (!(gsonObj.get("id") == null)){
+                String type = gsonObj.get("type").getAsString();
+                String id = gsonObj.get("id").getAsString();
+
+                System.out.println("=====================");
+                System.out.println("====    EVENT   =====");
+                System.out.println("=====================");
+                System.out.println("EVENT TIPO = " + type);
+                System.out.println("EVENT ID = " + id);
+            }
 
             // ACTOR
-            String actorType = gsonObj.getAsJsonObject("actor").get("type").getAsString();
-            String actorId = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id").getAsString();
-            String actorUser = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
+            if (!(gsonObj.getAsJsonObject("actor") == null)){
+
+                System.out.println("=====================");
+                System.out.println("====    ACTOR   =====");
+                System.out.println("=====================");
+                String actorType = gsonObj.getAsJsonObject("actor").get("type").getAsString();
+                System.out.println("ACTOR TYPE = " + actorType);
+
+                if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id") == null)) {
+                    String actorId = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id").getAsString();
+                    System.out.println("ACTOR ID = " + actorId);
+                }
+                if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId") == null)){
+                    String actorUser = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
+                    System.out.println("ACTOR USER = " + actorUser);
+                }
+            }
 
             // ACTION
-            String action = gsonObj.get("action").getAsString();
-            String objectType= gsonObj.getAsJsonObject("object").get("type").getAsString();
+            if (!(gsonObj.get("action") == null)) {
+                String action = gsonObj.get("action").getAsString();
+
+                System.out.println("=====================");
+                System.out.println("=====   ACTION  =====");
+                System.out.println("=====================");
+                System.out.println("ACTION = " + action);
+            }
+
+            // OBJECT
+            if (!(gsonObj.getAsJsonObject("object") == null)){
+                String objectType= gsonObj.getAsJsonObject("object").get("type").getAsString();
+
+                System.out.println("=====================");
+                System.out.println("=====   OBJECT  =====");
+                System.out.println("=====================");
+                System.out.println("ACTION OBJECT TYPE = " + objectType);
+
+                if ((objectType.equals("SoftwareApplication"))){
+                    String objectHeaderAgent= gsonObj.getAsJsonObject("object").getAsJsonObject("extensions").get("bb:request.headers.agent").getAsString();
+                    System.out.println("OBJECT HEADERS AGENT = " + objectHeaderAgent);
+                    String objectHeaderIp= gsonObj.getAsJsonObject("object").getAsJsonObject("extensions").get("bb:request.headers.ipAddress").getAsString();
+                    System.out.println("OBJECT HEADERS IP ADDRESS = " + objectHeaderIp);
+                }
+            }
 
             // TARGET
-            String TargetType= gsonObj.getAsJsonObject("target").get("type").getAsString();
+            if (!(gsonObj.getAsJsonObject("target") == null)){
+                String TargetType= gsonObj.getAsJsonObject("target").get("type").getAsString();
+
+                System.out.println("=====================");
+                System.out.println("====   TARGET  ======");
+                System.out.println("=====================");
+                System.out.println("TARGET TYPE = " + TargetType);
+            }
 
             // DATETIME
-            String eventTime = gsonObj.get("eventTime").getAsString();
-            LocalDateTime dateTime = aDate(eventTime);
-            String edAppType= gsonObj.getAsJsonObject("edApp").get("type").getAsString();
+            if (!(gsonObj.get("eventTime") == null)){
+                String eventTime = gsonObj.get("eventTime").getAsString();
+                LocalDateTime dateTime = aDate(eventTime);
+
+                System.out.println("=====================");
+                System.out.println("==== EVENT TIME =====");
+                System.out.println("=====================");
+                System.out.println("EVENTTIME = " + dateTime);
+            }
+
+            // EDAPP
+            if (!(gsonObj.getAsJsonObject("edApp") == null)){
+                String edAppType= gsonObj.getAsJsonObject("edApp").get("type").getAsString();
+
+                System.out.println("=====================");
+                System.out.println("==== EDAPP TIME =====");
+                System.out.println("=====================");
+                System.out.println("EDAPP TYPE = " + edAppType);
+            }
 
             // GRUPO
-            String grupoType = gsonObj.getAsJsonObject("group").get("type").getAsString();
-            String grupoId = gsonObj.getAsJsonObject("group").getAsJsonObject("extensions").get("bb:course.id").getAsString();
-            String grupoNumber = gsonObj.getAsJsonObject("group").get("courseNumber").getAsString();
+            if (!(gsonObj.getAsJsonObject("group") == null)){
+                String grupoType = gsonObj.getAsJsonObject("group").get("type").getAsString();
+
+                System.out.println("=====================");
+                System.out.println("=====   GROUP   =====");
+                System.out.println("=====================");
+                System.out.println("GROUP TYPE = " + grupoType);
+
+                if (!(grupoType.equals("Group"))) {
+                    String grupoId = gsonObj.getAsJsonObject("group").getAsJsonObject("extensions").get("bb:course.id").getAsString();
+                    System.out.println("GROUP ID = " + grupoId);
+                }
+
+                if (!(gsonObj.getAsJsonObject("group").get("courseNumber") == null)) {
+                    String grupoNumber = gsonObj.getAsJsonObject("group").get("courseNumber").getAsString();
+                    System.out.println("GROUP NUMBER = " + grupoNumber);
+                }
+            }
 
             // MEMBERSHIP
-            String membershipstatus = gsonObj.getAsJsonObject("membership").get("status").getAsString();
-            String membershipType = gsonObj.getAsJsonObject("membership").get("type").getAsString();
-            String membershipExtCourseId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:course.id").getAsString();
-            String membershipExtCourseExtId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:course.externalId").getAsString();
-            String membershipExtUserId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:user.id").getAsString();
-            String membershipExtUserExtId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
+            if (!(gsonObj.getAsJsonObject("membership") == null)){
 
-            JsonArray data = gsonObj.getAsJsonObject("membership").get("roles").getAsJsonArray();
-            List roles = new ArrayList();
-            for (JsonElement event : data) {
-                roles.add(event.getAsString());
+                System.out.println("=====================");
+                System.out.println("==== MEMBERSHIP =====");
+                System.out.println("=====================");
+                String membershipstatus = gsonObj.getAsJsonObject("membership").get("status").getAsString();
+                System.out.println("MEMBERSHIP STATUS = " + membershipstatus);
+                String membershipType = gsonObj.getAsJsonObject("membership").get("type").getAsString();
+                System.out.println("MEMBERSHIP TYPE = " + membershipType);
+                String membershipExtCourseId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:course.id").getAsString();
+                System.out.println("MEMBERSHIP COURSE ID = " + membershipExtCourseId);
+                String membershipExtCourseExtId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:course.externalId").getAsString();
+                System.out.println("MEMBERSHIP COURSE EXT ID = " + membershipExtCourseExtId);
+                String membershipExtUserId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:user.id").getAsString();
+                System.out.println("MEMBERSHIP USER ID = " + membershipExtUserId);
+                String membershipExtUserExtId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
+                System.out.println("MEMBERSHIP USER EXT ID = " + membershipExtUserExtId);
+
+                JsonArray data = gsonObj.getAsJsonObject("membership").get("roles").getAsJsonArray();
+                List roles = new ArrayList();
+                for (JsonElement event : data) {
+                    roles.add(event.getAsString());
+                }
+                System.out.println("MEMBERSHIP ROLES = " + roles.toString());
             }
 
             // FEDERATED SESSION
-            String fsStartedAtTime = gsonObj.getAsJsonObject("federatedSession").get("startedAtTime").getAsString();
-            LocalDateTime federatedSessionStartedAtTime = aDate(fsStartedAtTime);
-            String federatedSessionType = gsonObj.getAsJsonObject("federatedSession").get("type").getAsString();
-            String federatedSessionName = gsonObj.getAsJsonObject("federatedSession").get("name").getAsString();
-            String fsDateCreated = gsonObj.getAsJsonObject("federatedSession").get("dateCreated").getAsString();
-            LocalDateTime federatedSessionDateCreated = aDate(fsDateCreated);
-            String federatedSessionUserType = gsonObj.getAsJsonObject("federatedSession").getAsJsonObject("user").get("type").getAsString();
-            String federatedSessionUserId = gsonObj.getAsJsonObject("federatedSession").getAsJsonObject("user").getAsJsonObject("extensions").get("bb:user.id").getAsString();
-            String federatedSessionUserExtId = gsonObj.getAsJsonObject("federatedSession").getAsJsonObject("user").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
+            if (!(gsonObj.getAsJsonObject("federatedSession") == null)){
 
-            System.out.println("=====================");
-            System.out.println("====    EVENT   =====");
-            System.out.println("=====================");
-            System.out.println("TIPO = " + type);
+                System.out.println("=====================");
+                System.out.println("= FEDERATED SESSION =");
+                System.out.println("=====================");
+                String fsStartedAtTime = gsonObj.getAsJsonObject("federatedSession").get("startedAtTime").getAsString();
+                LocalDateTime federatedSessionStartedAtTime = aDate(fsStartedAtTime);
+                System.out.println("FEDERATED SESSION STARTED AT TIME = " + federatedSessionStartedAtTime);
+                String federatedSessionType = gsonObj.getAsJsonObject("federatedSession").get("type").getAsString();
+                System.out.println("FEDERATED SESSION TYPE = " + federatedSessionType);
+                String federatedSessionName = gsonObj.getAsJsonObject("federatedSession").get("name").getAsString();
+                System.out.println("FEDERATED SESSION NAME = " + federatedSessionName);
+                if (!(gsonObj.getAsJsonObject("federatedSession").get("dateCreated") == null)){
+                    String fsDateCreated = gsonObj.getAsJsonObject("federatedSession").get("dateCreated").getAsString();
+                    LocalDateTime federatedSessionDateCreated = aDate(fsDateCreated);
+                    System.out.println("FEDERATED SESSION DATE CREATED = " + federatedSessionDateCreated);
+                }
+                if (!(gsonObj.getAsJsonObject("federatedSession").get("dateModified") == null)){
+                    String fsDateModified = gsonObj.getAsJsonObject("federatedSession").get("dateModified").getAsString();
+                    LocalDateTime federatedSessionDateModified = aDate(fsDateModified);
+                    System.out.println("FEDERATED SESSION DATE MODIYIED = " + federatedSessionDateModified);
+                }
+                String federatedSessionUserType = gsonObj.getAsJsonObject("federatedSession").getAsJsonObject("user").get("type").getAsString();
+                System.out.println("FEDERATED SESSION USER TYPE = " + federatedSessionUserType);
+                String federatedSessionUserId = gsonObj.getAsJsonObject("federatedSession").getAsJsonObject("user").getAsJsonObject("extensions").get("bb:user.id").getAsString();
+                System.out.println("FEDERATED SESSION USER ID = " + federatedSessionUserId);
+                String federatedSessionUserExtId = gsonObj.getAsJsonObject("federatedSession").getAsJsonObject("user").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
+                System.out.println("FEDERATED SESSION USER EXT ID = " + federatedSessionUserExtId);
+            }
 
-            System.out.println("=====================");
-            System.out.println("====    ACTOR   =====");
-            System.out.println("=====================");
-            System.out.println("ACTOR TYPE = " + actorType);
-            System.out.println("ACTOR ID = " + actorId);
-            System.out.println("ACTOR USER = " + actorUser);
 
-            System.out.println("=====================");
-            System.out.println("=====   ACTION  =====");
-            System.out.println("=====================");
-            System.out.println("ACTION = " + action);
-            System.out.println("ACTION OBJECT TYPE = " + objectType);
-
-            System.out.println("=====================");
-            System.out.println("====   TARGET  ======");
-            System.out.println("=====================");
-            System.out.println("TARGET TYPE = " + TargetType);
-
-            System.out.println("=====================");
-            System.out.println("==== EVENT TIME =====");
-            System.out.println("=====================");
-            System.out.println("EVENTTIME = " + dateTime);
-            System.out.println("EDAPP TYPE = " + edAppType);
-
-            System.out.println("=====================");
-            System.out.println("=====   GROUP   =====");
-            System.out.println("=====================");
-            System.out.println("GROUP TYPE = " + grupoType);
-            System.out.println("GROUP ID = " + grupoId);
-            System.out.println("GROUP NUMBER = " + grupoNumber);
-
-            System.out.println("=====================");
-            System.out.println("==== MEMBERSHIP =====");
-            System.out.println("=====================");
-            System.out.println("MEMBERSHIP TYPE = " + membershipType);
-            System.out.println("MEMBERSHIP STATUS = " + membershipstatus);
-            System.out.println("MEMBERSHIP COURSE ID = " + membershipExtCourseId);
-            System.out.println("MEMBERSHIP COURSE EXT ID = " + membershipExtCourseExtId);
-            System.out.println("MEMBERSHIP USER ID = " + membershipExtUserId);
-            System.out.println("MEMBERSHIP USER EXT ID = " + membershipExtUserExtId);
-            System.out.println("MEMBERSHIP ROLES = " + roles.toString());
-
-            System.out.println("=====================");
-            System.out.println("= FEDERATED SESSION =");
-            System.out.println("=====================");
-            System.out.println("FEDERATED SESSION STARTED AT TIME = " + federatedSessionStartedAtTime);
-            System.out.println("FEDERATED SESSION TYPE = " + federatedSessionType);
-            System.out.println("FEDERATED SESSION NAME = " + federatedSessionName);
-            System.out.println("FEDERATED SESSION DATE CREATED = " + federatedSessionDateCreated);
-            System.out.println("FEDERATED SESSION USER TYPE = " + federatedSessionUserType);
-            System.out.println("FEDERATED SESSION USER ID = " + federatedSessionUserId);
-            System.out.println("FEDERATED SESSION USER EXT ID = " + federatedSessionUserExtId);
 
 /*
             // List of primitive elements

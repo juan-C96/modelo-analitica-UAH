@@ -33,10 +33,11 @@ public class DatosController {
 
 
         File folder = new File("C://Users/jcher/OneDrive/Desktop/Escuela/TFM/test/");
-
+        int registro = 1;
 
         for (File file : folder.listFiles()) {
-            System.out.println(file.getName());
+            System.out.println(registro + "   " + file.getName());
+            registro ++;
 
             // try (BufferedReader br = new BufferedReader(new FileReader("C://Users/jcher/OneDrive/Desktop/Escuela/TFM/test/817--output-Friday-June-03-2022-07-47-58.json"))) {
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -243,5 +244,6 @@ public class DatosController {
                 }
             }
         }
+        System.out.println("Total de archivos cargados = " + --registro);
     }
 }

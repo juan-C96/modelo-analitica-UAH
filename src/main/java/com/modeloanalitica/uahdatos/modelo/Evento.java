@@ -3,7 +3,7 @@ package com.modeloanalitica.uahdatos.modelo;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -11,7 +11,11 @@ import java.util.Objects;
 public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
     @Id
     @Column(name = "e_uuid", nullable = false) //La aplicación emisora DEBE aprovisionar el evento con un UUID. SE DEBE generar un UUID de la versión 4. El UUID DEBE expresarse como un URN usando la forma "urn:uuid:<UUID>" por [RFC4122].
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long e_uuid;
+
+    @Column(name = "e_uuid_real", nullable = false) //La aplicación emisora DEBE aprovisionar el evento con un UUID. SE DEBE generar un UUID de la versión 4. El UUID DEBE expresarse como un URN usando la forma "urn:uuid:<UUID>" por [RFC4122].
+    private String e_uuid_real;
 
     @Column(name = "e_tipo") //Un valor de cadena correspondiente al Término definido para el evento en el documento de contexto JSON-LD de IMS Caliper externo. Para un evento genérico, establezca el valor de cadena Evento. Si se crea un subtipo de Entidad, establezca el término correspondiente al subtipo utilizado, por ejemplo, NavigationEvent.typetype
     private String e_tipo;
@@ -27,7 +31,7 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
 
     @Column(name = "e_datetime")
     @DateTimeFormat(pattern = "YYYY-MM-DD:mm:ss") // Un valor de fecha y hora ISO 8601 expresado con precisión de milisegundos que indica cuándo ocurrió el evento. El valor DEBE expresarse utilizando el formato AAAA-MM-DDTHH:mm:ss. SSSZ establecido en UTC sin desplazamiento especificado.
-    private Date e_datetime;
+    private LocalDateTime e_datetime;
 
     @Column(name = "e_sesion") // La sesión de usuario actual. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI de la sesión.session
     private String e_sesion;
@@ -36,23 +40,24 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
     @JoinTable(name = "t_evento_actor", joinColumns = @JoinColumn(name = "e_uuid", referencedColumnName = "e_uuid"), inverseJoinColumns = @JoinColumn(name = "a_id", referencedColumnName = "a_id"))
     Actor e_actor; // El Agente que inició el Evento, por lo general, aunque no siempre una Persona. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI del actor.action
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "t_evento_grupo", joinColumns = @JoinColumn(name = "e_uuid", referencedColumnName = "e_uuid"), inverseJoinColumns = @JoinColumn(name = "g_id", referencedColumnName = "g_id"))
     Grupo e_grupo; // Una organización que representa el contexto del grupo. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI del grupo.group
 
     public Evento() {
     }
 
-    public Evento(Long e_uuid, String e_tipo, String e_perfil, Actor e_actor, String e_accion, String e_objeto, Date e_datetime, Grupo e_grupo, String e_sesion) {
+    public Evento(Long e_uuid, String e_uuid_real, String e_tipo, String e_perfil, String e_accion, String e_objeto, LocalDateTime e_datetime, String e_sesion, Actor e_actor, Grupo e_grupo) {
         this.e_uuid = e_uuid;
+        this.e_uuid_real = e_uuid_real;
         this.e_tipo = e_tipo;
         this.e_perfil = e_perfil;
-        this.e_actor = e_actor;
         this.e_accion = e_accion;
         this.e_objeto = e_objeto;
         this.e_datetime = e_datetime;
-        this.e_grupo = e_grupo;
         this.e_sesion = e_sesion;
+        this.e_actor = e_actor;
+        this.e_grupo = e_grupo;
     }
 
     public Long getE_uuid() {
@@ -61,6 +66,14 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
 
     public void setE_uuid(Long e_uuid) {
         this.e_uuid = e_uuid;
+    }
+
+    public String getE_uuid_real() {
+        return e_uuid_real;
+    }
+
+    public void setE_uuid_real(String e_uuid_real) {
+        this.e_uuid_real = e_uuid_real;
     }
 
     public String getE_tipo() {
@@ -103,11 +116,11 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
         this.e_objeto = e_objeto;
     }
 
-    public Date getE_datetime() {
+    public LocalDateTime getE_datetime() {
         return e_datetime;
     }
 
-    public void setE_datetime(Date e_datetime) {
+    public void setE_datetime(LocalDateTime e_datetime) {
         this.e_datetime = e_datetime;
     }
 

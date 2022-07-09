@@ -9,7 +9,17 @@ import java.util.Objects;
 public class Grupo {
     @Id
     @Column(name = "g_id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long g_id;
+
+    @Column(name = "g_id_real", nullable = false)
+    private String g_id_real;
+
+    @Column(name = "g_tipo", nullable = false)
+    private String g_tipo;
+
+    @Column(name = "g_numero", nullable = false)
+    private String g_numero;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "t_grupo_actor", joinColumns = @JoinColumn(name = "g_id", referencedColumnName = "g_id"), inverseJoinColumns = @JoinColumn(name = "a_id", referencedColumnName = "a_id"))
@@ -18,8 +28,17 @@ public class Grupo {
     public Grupo() {
     }
 
-    public Grupo(Long g_id, List<Actor> g_actores) {
+    public Grupo(String g_id_real, String g_tipo, String g_numero) {
+        this.g_id_real = g_id_real;
+        this.g_tipo = g_tipo;
+        this.g_numero = g_numero;
+    }
+
+    public Grupo(Long g_id, String g_id_real, String g_tipo, String g_numero, List<Actor> g_actores) {
         this.g_id = g_id;
+        this.g_id_real = g_id_real;
+        this.g_tipo = g_tipo;
+        this.g_numero = g_numero;
         this.g_actores = g_actores;
     }
 
@@ -37,6 +56,30 @@ public class Grupo {
 
     public void setG_actores(List<Actor> g_actores) {
         this.g_actores = g_actores;
+    }
+
+    public String getG_id_real() {
+        return g_id_real;
+    }
+
+    public void setG_id_real(String g_id_real) {
+        this.g_id_real = g_id_real;
+    }
+
+    public String getG_tipo() {
+        return g_tipo;
+    }
+
+    public void setG_tipo(String g_tipo) {
+        this.g_tipo = g_tipo;
+    }
+
+    public String getG_numero() {
+        return g_numero;
+    }
+
+    public void setG_numero(String g_numero) {
+        this.g_numero = g_numero;
     }
 
     @Override

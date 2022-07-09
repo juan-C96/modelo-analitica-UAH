@@ -1,6 +1,13 @@
 package com.modeloanalitica.uahdatos.controlador;
 
 import com.google.gson.*;
+import com.modeloanalitica.uahdatos.modelo.Actor;
+import com.modeloanalitica.uahdatos.modelo.Evento;
+import com.modeloanalitica.uahdatos.modelo.Grupo;
+import com.modeloanalitica.uahdatos.servicio.IActorService;
+import com.modeloanalitica.uahdatos.servicio.IEventoService;
+import com.modeloanalitica.uahdatos.servicio.IGrupoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,6 +18,19 @@ import java.util.List;
 
 @RestController
 public class DatosController {
+
+    @Autowired
+    IEventoService eventoService;
+    @Autowired
+    IActorService actorService;
+    @Autowired
+    IGrupoService grupoService;
+
+    public DatosController(IEventoService eventoService, IActorService actorService, IGrupoService grupoService) {
+        this.eventoService = eventoService;
+        this.actorService = actorService;
+        this.grupoService = grupoService;
+    }
 
     public LocalDateTime aDate(String date) {
         try {
@@ -69,6 +89,8 @@ public class DatosController {
             // for each element of array
             for (JsonElement obj : gsonArr) {
 
+                Evento evento = new Evento();
+
                 // Object of array
                 JsonObject gsonObj = obj.getAsJsonObject();
                 //System.out.println(gsonObj.toString());
@@ -88,19 +110,48 @@ public class DatosController {
                         System.out.println("EVENT TIPO = " + type);
                         System.out.println("EVENT ID = " + id);
 
+                        evento.setE_uuid_real(id);
+                        evento.setE_tipo(type);
+
                         // ACTOR
                         if (!(gsonObj.getAsJsonObject("actor") == null)) {
 
                             String actorType = gsonObj.getAsJsonObject("actor").get("type").getAsString();
                             System.out.println("ACTOR TYPE = " + actorType);
 
+                            Actor actor = new Actor();
+
+                            actor.setA_tipo(actorType);
+
                             if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id") == null)) {
                                 String actorId = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id").getAsString();
                                 System.out.println("ACTOR ID = " + actorId);
+
+                                actor.setA_id_real(actorId);
                             }
                             if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId") == null)) {
                                 String actorUser = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
                                 System.out.println("ACTOR USER = " + actorUser);
+
+                                actor.setA_usuario(actorUser);
+                            }
+
+                            List<Actor> actores = actorService.buscarTodos();
+                            Long id_actor = null;
+                            Boolean flag = true;
+
+                            for (int i = 0; i < actores.size(); i++) {
+                                if (actores.get(i).getA_id_real().equals(actor.getA_id_real())) {
+                                    id_actor = actores.get(i).getA_id();
+                                    flag = false;
+                                }
+                            }
+
+                            if (flag){
+                                actorService.guardarActor(actor);
+                                evento.setE_actor(actorService.buscarActorPorId(actor.getA_id()));
+                            } else {
+                                evento.setE_actor(actorService.buscarActorPorId(id_actor));
                             }
                         }
 
@@ -109,6 +160,8 @@ public class DatosController {
                             String action = gsonObj.get("action").getAsString();
 
                             System.out.println("ACTION = " + action);
+
+                            evento.setE_accion(action);
                         }
 
                         // OBJECT
@@ -123,6 +176,8 @@ public class DatosController {
                                 String objectHeaderIp = gsonObj.getAsJsonObject("object").getAsJsonObject("extensions").get("bb:request.headers.ipAddress").getAsString();
                                 System.out.println("OBJECT HEADERS IP ADDRESS = " + objectHeaderIp);
                             }
+
+                            evento.setE_objeto(objectType);
                         }
 
                         // TARGET
@@ -138,6 +193,8 @@ public class DatosController {
                             LocalDateTime dateTime = aDate(eventTime);
 
                             System.out.println("EVENTTIME = " + dateTime);
+
+                            evento.setE_datetime(dateTime);
                         }
 
                         // EDAPP
@@ -153,15 +210,23 @@ public class DatosController {
 
                             System.out.println("GROUP TYPE = " + grupoType);
 
+                            Grupo grupo = new Grupo();
+                            grupo.setG_tipo(grupoType);
+
                             if (!(grupoType.equals("Group"))) {
                                 String grupoId = gsonObj.getAsJsonObject("group").getAsJsonObject("extensions").get("bb:course.id").getAsString();
                                 System.out.println("GROUP ID = " + grupoId);
+                                grupo.setG_id_real(grupoId);
                             }
 
                             if (!(gsonObj.getAsJsonObject("group").get("courseNumber") == null)) {
                                 String grupoNumber = gsonObj.getAsJsonObject("group").get("courseNumber").getAsString();
                                 System.out.println("GROUP NUMBER = " + grupoNumber);
+                                grupo.setG_numero(grupoNumber);
                             }
+
+                            grupoService.guardarGrupo(grupo);
+                            evento.setE_grupo(grupoService.buscarGrupoPorId(grupo.getG_id()));
                         }
 
                         // MEMBERSHIP
@@ -215,6 +280,7 @@ public class DatosController {
                             String federatedSessionUserExtId = gsonObj.getAsJsonObject("federatedSession").getAsJsonObject("user").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
                             System.out.println("FEDERATED SESSION USER EXT ID = " + federatedSessionUserExtId);
                         }
+                        eventoService.guardarEvento(evento);
                     }
                 }
             }

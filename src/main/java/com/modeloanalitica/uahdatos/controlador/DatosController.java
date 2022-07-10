@@ -8,15 +8,15 @@ import com.modeloanalitica.uahdatos.servicio.IActorService;
 import com.modeloanalitica.uahdatos.servicio.IEventoService;
 import com.modeloanalitica.uahdatos.servicio.IGrupoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
+@Controller
 public class DatosController {
 
     @Autowired
@@ -44,7 +44,7 @@ public class DatosController {
     }
 
     @GetMapping("/cargar")
-    public void cargarDatos() {
+    public String cargarDatos() {
 
         Gson gson = new Gson();
 
@@ -150,8 +150,10 @@ public class DatosController {
                             if (flag){
                                 actorService.guardarActor(actor);
                                 evento.setE_actor(actorService.buscarActorPorId(actor.getA_id()));
+                                evento.setE_usuarios(actorService.buscarActorPorId(actor.getA_id()).getA_usuario());
                             } else {
                                 evento.setE_actor(actorService.buscarActorPorId(id_actor));
+                                evento.setE_usuarios(actorService.buscarActorPorId(id_actor).getA_usuario());
                             }
                         }
 
@@ -239,8 +241,10 @@ public class DatosController {
                             if (flag_2){
                                 grupoService.guardarGrupo(grupo);
                                 evento.setE_grupo(grupoService.buscarGrupoPorId(grupo.getG_id()));
+                                evento.setE_grupos(grupoService.buscarGrupoPorId(grupo.getG_id()).getG_numero());
                             } else {
                                 evento.setE_grupo(grupoService.buscarGrupoPorId(id_grupo));
+                                evento.setE_grupos(grupoService.buscarGrupoPorId(id_grupo).getG_numero());
                             }
                         }
 
@@ -301,5 +305,6 @@ public class DatosController {
             }
         }
         System.out.println("Total de archivos cargados = " + --registro);
+        return "redirect:/";
     }
 }

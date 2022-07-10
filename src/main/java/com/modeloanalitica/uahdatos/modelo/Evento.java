@@ -40,14 +40,20 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
     @JoinTable(name = "t_evento_actor", joinColumns = @JoinColumn(name = "e_uuid", referencedColumnName = "e_uuid"), inverseJoinColumns = @JoinColumn(name = "a_id", referencedColumnName = "a_id"))
     Actor e_actor; // El Agente que inició el Evento, por lo general, aunque no siempre una Persona. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI del actor.action
 
+    @Column(name = "e_usuarios") // La sesión de usuario actual. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI de la sesión.session
+    private String e_usuarios;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "t_evento_grupo", joinColumns = @JoinColumn(name = "e_uuid", referencedColumnName = "e_uuid"), inverseJoinColumns = @JoinColumn(name = "g_id", referencedColumnName = "g_id"))
     Grupo e_grupo; // Una organización que representa el contexto del grupo. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI del grupo.group
 
+    @Column(name = "e_grupos") // La sesión de usuario actual. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI de la sesión.session
+    private String e_grupos;
+
     public Evento() {
     }
 
-    public Evento(Long e_uuid, String e_uuid_real, String e_tipo, String e_perfil, String e_accion, String e_objeto, LocalDateTime e_datetime, String e_sesion, Actor e_actor, Grupo e_grupo) {
+    public Evento(Long e_uuid, String e_uuid_real, String e_tipo, String e_perfil, String e_accion, String e_objeto, LocalDateTime e_datetime, String e_sesion, Actor e_actor, String e_usuarios, Grupo e_grupo, String e_grupos) {
         this.e_uuid = e_uuid;
         this.e_uuid_real = e_uuid_real;
         this.e_tipo = e_tipo;
@@ -57,7 +63,9 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
         this.e_datetime = e_datetime;
         this.e_sesion = e_sesion;
         this.e_actor = e_actor;
+        this.e_usuarios = e_usuarios;
         this.e_grupo = e_grupo;
+        this.e_grupos = e_grupos;
     }
 
     public Long getE_uuid() {
@@ -138,6 +146,22 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
 
     public void setE_sesion(String e_sesion) {
         this.e_sesion = e_sesion;
+    }
+
+    public String getE_usuarios() {
+        return e_usuarios;
+    }
+
+    public void setE_usuarios(String e_usuarios) {
+        this.e_usuarios = e_usuarios;
+    }
+
+    public String getE_grupos() {
+        return e_grupos;
+    }
+
+    public void setE_grupos(String e_grupos) {
+        this.e_grupos = e_grupos;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.modeloanalitica.uahdatos.controlador;
 import com.modeloanalitica.uahdatos.modelo.Evento;
 import com.modeloanalitica.uahdatos.servicio.IEventoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -225,8 +225,23 @@ public class DatosController {
                                 grupo.setG_numero(grupoNumber);
                             }
 
-                            grupoService.guardarGrupo(grupo);
-                            evento.setE_grupo(grupoService.buscarGrupoPorId(grupo.getG_id()));
+                            List<Grupo> grupos = grupoService.buscarTodos();
+                            Long id_grupo = null;
+                            Boolean flag_2 = true;
+
+                            for (int i = 0; i < grupos.size(); i++) {
+                                if ((grupos.get(i).getG_id_real().equals(grupo.getG_id_real())) && (grupos.get(i).getG_tipo().equals(grupo.getG_tipo()))) {
+                                    id_grupo = grupos.get(i).getG_id();
+                                    flag_2 = false;
+                                }
+                            }
+
+                            if (flag_2){
+                                grupoService.guardarGrupo(grupo);
+                                evento.setE_grupo(grupoService.buscarGrupoPorId(grupo.getG_id()));
+                            } else {
+                                evento.setE_grupo(grupoService.buscarGrupoPorId(id_grupo));
+                            }
                         }
 
                         // MEMBERSHIP

@@ -1,5 +1,6 @@
 package com.modeloanalitica.uahdatos.controlador;
 
+import com.modeloanalitica.uahdatos.servicio.IActorService;
 import com.modeloanalitica.uahdatos.servicio.IEventoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,10 +13,13 @@ public class MainController {
 
     @Autowired
     IEventoService eventoService;
+    @Autowired
+    IActorService actorService;
 
-    public MainController(IEventoService eventoService) {
+    public MainController(IEventoService eventoService, IActorService actorService) {
         super();
         this.eventoService = eventoService;
+        this.actorService = actorService;
     }
 
     @GetMapping("/")
@@ -28,5 +32,11 @@ public class MainController {
     public String Estadisticas(Model model) {
         model.addAttribute("eventos", eventoService.buscarTodos());
         return "estadisticas";
+    }
+
+    @GetMapping("/aactores")
+    public String Actores(Model model) {
+        model.addAttribute("actores", actorService.buscarTodos());
+        return "actores/actores";
     }
 }

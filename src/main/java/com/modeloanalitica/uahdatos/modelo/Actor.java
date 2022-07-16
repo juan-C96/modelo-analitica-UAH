@@ -21,7 +21,10 @@ public class Actor {
     @Column(name = "a_tipo")
     private String a_tipo;
 
-    @OneToMany
+    @Column(name = "a_roles")
+    private String a_roles;
+
+    @ManyToMany
     @JoinTable(name = "t_actor_role", joinColumns = @JoinColumn(name = "a_id", referencedColumnName = "a_id"), inverseJoinColumns = @JoinColumn(name = "r_id", referencedColumnName = "r_id"))
     List<Role> a_rol;
 
@@ -33,11 +36,13 @@ public class Actor {
         this.a_tipo = a_tipo;
     }
 
-    public Actor(Long a_id, String a_id_real, String a_usuario, String a_tipo, List<Role> a_rol) {
+
+    public Actor(Long a_id, String a_id_real, String a_usuario, String a_tipo, String a_roles, List<Role> a_rol) {
         this.a_id = a_id;
         this.a_id_real = a_id_real;
         this.a_usuario = a_usuario;
         this.a_tipo = a_tipo;
+        this.a_roles = a_roles;
         this.a_rol = a_rol;
     }
 
@@ -79,6 +84,14 @@ public class Actor {
 
     public void setA_tipo(String a_tipo) {
         this.a_tipo = a_tipo;
+    }
+
+    public String getA_roles() {
+        return a_roles;
+    }
+
+    public void setA_roles(String a_roles) {
+        this.a_roles = a_roles;
     }
 
     @Override

@@ -17,6 +17,10 @@ public class Role {
 
     }
 
+    public Role(String r_rol) {
+        this.r_rol = r_rol;
+    }
+
     public Role(Long r_id, String r_rol) {
         this.r_id = r_id;
         this.r_rol = r_rol;

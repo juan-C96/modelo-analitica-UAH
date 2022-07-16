@@ -262,20 +262,21 @@ public class DatosController {
                             Boolean flag_role = true;
 
                             String membershipstatus = gsonObj.getAsJsonObject("membership").get("status").getAsString();
-//                            System.out.println("MEMBERSHIP STATUS = " + membershipstatus);
+                            System.out.println("MEMBERSHIP STATUS = " + membershipstatus);
                             String membershipType = gsonObj.getAsJsonObject("membership").get("type").getAsString();
-//                            System.out.println("MEMBERSHIP TYPE = " + membershipType);
+                            System.out.println("MEMBERSHIP TYPE = " + membershipType);
                             String membershipExtCourseId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:course.id").getAsString();
-//                            System.out.println("MEMBERSHIP COURSE ID = " + membershipExtCourseId);
+                            System.out.println("MEMBERSHIP COURSE ID = " + membershipExtCourseId);
                             String membershipExtCourseExtId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:course.externalId").getAsString();
-//                            System.out.println("MEMBERSHIP COURSE EXT ID = " + membershipExtCourseExtId);
+                            System.out.println("MEMBERSHIP COURSE EXT ID = " + membershipExtCourseExtId);
                             String membershipExtUserId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:user.id").getAsString();
-//                            System.out.println("MEMBERSHIP USER ID = " + membershipExtUserId);
+                            System.out.println("MEMBERSHIP USER ID = " + membershipExtUserId);
                             String membershipExtUserExtId = gsonObj.getAsJsonObject("membership").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
-//                            System.out.println("MEMBERSHIP USER EXT ID = " + membershipExtUserExtId);
+                            System.out.println("MEMBERSHIP USER EXT ID = " + membershipExtUserExtId);
 
                             JsonArray data = gsonObj.getAsJsonObject("membership").get("roles").getAsJsonArray();
-                            List rol = new ArrayList();;
+                            List rol = new ArrayList();
+                            ;
                             for (JsonElement event : data) {
                                 rol.add(event.getAsString());
                             }
@@ -313,6 +314,67 @@ public class DatosController {
                             }
 
 //                            System.out.println("MEMBERSHIP ROLES = " + roles.toString());
+
+                            //=====================================================
+
+                            Long idGrupo = null;
+                            boolean flag_grupo = true;
+
+                            Grupo grupo = null;
+                            List<Actor> actores_grupo = new ArrayList<>();
+
+                            for (int i = 0; i < grupoService.buscarTodos().size(); i++) {
+                                if (grupoService.buscarTodos().get(i).getG_id_real().equals(membershipExtCourseId)) {
+                                    idGrupo = grupoService.buscarTodos().get(i).getG_id();
+                                    flag_grupo = false;
+                                    break;
+                                }
+                            }
+
+                            Long idActor = null;
+                            String nombres_actores = "";
+
+                            for (int i = 0; i < actorService.buscarTodos().size(); i++) {
+                                if(actorService.buscarTodos().get(i).getA_id_real().equals(membershipExtUserId)){
+                                    idActor = actorService.buscarTodos().get(i).getA_id();
+                                }
+                            }
+/*
+                            if(idActor == null){
+                                Actor newActor = new Actor();
+                                newActor.setA_id_real(membershipExtUserId);
+                                newActor.setA_tipo();
+                                newActor.setA_usuario(membershipExtUserExtId);
+                            }*/
+
+                            if (flag_grupo) {
+                                grupo.setG_id_real(membershipExtCourseId);
+                                grupo.setG_numero(membershipExtCourseExtId);
+                                actores_grupo.add(actorService.buscarActorPorId(idActor));
+                                grupo.setG_actores(actores_grupo);
+                                nombres_actores = actores_grupo.get(0).getA_usuario();
+                                grupo.setG_personas(nombres_actores);
+                                grupoService.guardarGrupo(grupo);
+                            } else {
+                                grupo = grupoService.buscarGrupoPorId(idGrupo);
+                                if(idActor != null && (grupo.getG_actores() == null || !grupo.getG_actores().contains(actorService.buscarActorPorId(idActor)))){
+                                    if(grupo.getG_actores() == null){
+                                        actores_grupo = new ArrayList<>();
+                                    }else{
+                                        actores_grupo = grupo.getG_actores();
+                                    }
+                                    actores_grupo.add(actorService.buscarActorPorId(idActor));
+                                    List<String> nombres = new ArrayList<>();
+                                    for (int i = 0; i < actores_grupo.size(); i++) {
+                                        nombres.add(actores_grupo.get(i).getA_usuario());
+                                    }
+                                    grupo.setG_actores(actores_grupo);
+                                    grupo.setG_personas(nombres.toString());
+                                    grupoService.actualizarGrupo(grupo);
+                                }
+                            }
+
+                            //=====================================================
 
                         }
 

@@ -15,7 +15,7 @@ public class Grupo {
     @Column(name = "g_id_real", nullable = false)
     private String g_id_real;
 
-    @Column(name = "g_tipo", nullable = false)
+    @Column(name = "g_tipo")
     private String g_tipo;
 
     @Column(name = "g_numero", nullable = false)
@@ -24,6 +24,9 @@ public class Grupo {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "t_grupo_actor", joinColumns = @JoinColumn(name = "g_id", referencedColumnName = "g_id"), inverseJoinColumns = @JoinColumn(name = "a_id", referencedColumnName = "a_id"))
     List<Actor> g_actores;
+
+    @Column(name = "g_personas")
+    private String g_personas;
 
     public Grupo() {
     }
@@ -34,12 +37,13 @@ public class Grupo {
         this.g_numero = g_numero;
     }
 
-    public Grupo(Long g_id, String g_id_real, String g_tipo, String g_numero, List<Actor> g_actores) {
+    public Grupo(Long g_id, String g_id_real, String g_tipo, String g_numero, List<Actor> g_actores, String g_personas) {
         this.g_id = g_id;
         this.g_id_real = g_id_real;
         this.g_tipo = g_tipo;
         this.g_numero = g_numero;
         this.g_actores = g_actores;
+        this.g_personas = g_personas;
     }
 
     public Long getG_id() {
@@ -80,6 +84,14 @@ public class Grupo {
 
     public void setG_numero(String g_numero) {
         this.g_numero = g_numero;
+    }
+
+    public String getG_personas() {
+        return g_personas;
+    }
+
+    public void setG_personas(String g_personas) {
+        this.g_personas = g_personas;
     }
 
     @Override

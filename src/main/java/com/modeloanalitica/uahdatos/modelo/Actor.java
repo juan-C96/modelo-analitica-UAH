@@ -1,6 +1,9 @@
 package com.modeloanalitica.uahdatos.modelo;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +24,13 @@ public class Actor {
     @Column(name = "a_tipo")
     private String a_tipo;
 
+    @Column(name = "a_trabajosTerminados")
+    private int a_trabajosTerminados;
+
+    @Column(name = "a_ultimaConcexion")
+    @DateTimeFormat(pattern = "YYYY-MM-DD:mm:ss")
+    private LocalDateTime a_ultimaConcexion;
+
     @Column(name = "a_roles")
     private String a_roles;
 
@@ -36,12 +46,13 @@ public class Actor {
         this.a_tipo = a_tipo;
     }
 
-
-    public Actor(Long a_id, String a_id_real, String a_usuario, String a_tipo, String a_roles, List<Role> a_rol) {
+    public Actor(Long a_id, String a_id_real, String a_usuario, String a_tipo, int a_trabajosTerminados, LocalDateTime a_ultimaConcexion, String a_roles, List<Role> a_rol) {
         this.a_id = a_id;
         this.a_id_real = a_id_real;
         this.a_usuario = a_usuario;
         this.a_tipo = a_tipo;
+        this.a_trabajosTerminados = a_trabajosTerminados;
+        this.a_ultimaConcexion = a_ultimaConcexion;
         this.a_roles = a_roles;
         this.a_rol = a_rol;
     }
@@ -52,14 +63,6 @@ public class Actor {
 
     public void setA_id(Long a_id) {
         this.a_id = a_id;
-    }
-
-    public List<Role> getA_rol() {
-        return a_rol;
-    }
-
-    public void setA_rol(List<Role> a_rol) {
-        this.a_rol = a_rol;
     }
 
     public String getA_id_real() {
@@ -86,12 +89,36 @@ public class Actor {
         this.a_tipo = a_tipo;
     }
 
+    public int getA_trabajosTerminados() {
+        return a_trabajosTerminados;
+    }
+
+    public void setA_trabajosTerminados(int a_trabajosTerminados) {
+        this.a_trabajosTerminados = a_trabajosTerminados;
+    }
+
+    public LocalDateTime getA_ultimaConcexion() {
+        return a_ultimaConcexion;
+    }
+
+    public void setA_ultimaConcexion(LocalDateTime a_ultimaConcexion) {
+        this.a_ultimaConcexion = a_ultimaConcexion;
+    }
+
     public String getA_roles() {
         return a_roles;
     }
 
     public void setA_roles(String a_roles) {
         this.a_roles = a_roles;
+    }
+
+    public List<Role> getA_rol() {
+        return a_rol;
+    }
+
+    public void setA_rol(List<Role> a_rol) {
+        this.a_rol = a_rol;
     }
 
     @Override

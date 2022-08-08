@@ -66,49 +66,53 @@
 
 
 <script>
-        $(window).on('load', function () {
-            setTimeout(function () {
-                $(".loader").css({visibility: "hidden", opacity: "0"})
-            }, 200);
-        });
+    $(window).on('load', function () {
+        setTimeout(function () {
+            $(".loader").css({visibility: "hidden", opacity: "0"})
+        }, 200);
+    });
 </script>
 <br>
 <div class="loader"></div>
 <div class="container">
     <div class="container">
-        <a th:href="@{/cargar}" class="btn btn-primary">Cargar datos</a>
+        <a th:href="@{/cargarDatos}" class="btn btn-primary">Cargar datos</a>
         <a th:href="@{/estadisticas}" class="btn btn-danger">Estadísticas</a>
     </div>
 
     <br>
     <div class="container">
         <div class="row">
-            <table class="table table-striped table bordered">
-                <thead class="table-dark">
-                <tr>
-                    <th>UUID</th>
-                    <th>Accion</th>
-                    <th>ID-real</th>
-                    <th>Datetime</th>
-                    <th>Tipo</th>
-                    <th>Objeto</th>
-                    <th>Usuario</th>
-                    <th>Grupo</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="evento: ${eventos}">
-                    <td th:text="${evento.e_uuid}"></td>
-                    <td th:text="${evento.e_accion}"></td>
-                    <td th:text="${evento.e_uuid_real}"></td>
-                    <td th:text="${evento.e_datetime}"></td>
-                    <td th:text="${evento.e_tipo}"></td>
-                    <td th:text="${evento.e_objeto}"></td>
-                    <td th:text="${evento.e_usuarios}"></td>
-                    <td th:text="${evento.e_grupos}"></td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="card bg-light" style="padding:3px;">
+                <ul class="list-group">
+                    <table class="table table-striped table bordered">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>UUID</th>
+                            <th>Accion</th>
+                            <th>ID-real</th>
+                            <th>Datetime</th>
+                            <th>Tipo</th>
+                            <th>Objeto</th>
+                            <th>Usuario</th>
+                            <th>Grupo</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="evento: ${eventos}">
+                            <td th:text="${evento.e_uuid}"></td>
+                            <td th:text="${evento.e_accion}"></td>
+                            <td th:text="${evento.e_uuid_real}"></td>
+                            <td th:text="${evento.e_datetime}"></td>
+                            <td th:text="${evento.e_tipo}"></td>
+                            <td th:text="${evento.e_objeto}"></td>
+                            <td th:text="${evento.e_usuarios}"></td>
+                            <td th:text="${evento.e_grupos}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </ul>
+            </div>
         </div>
     </div>
 </div>

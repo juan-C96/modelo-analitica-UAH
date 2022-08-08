@@ -43,17 +43,13 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
     @Column(name = "e_usuarios") // La sesión de usuario actual. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI de la sesión.session
     private String e_usuarios;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "t_evento_grupo", joinColumns = @JoinColumn(name = "e_uuid", referencedColumnName = "e_uuid"), inverseJoinColumns = @JoinColumn(name = "g_id", referencedColumnName = "g_id"))
-    Grupo e_grupo; // Una organización que representa el contexto del grupo. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI del grupo.group
-
     @Column(name = "e_grupos") // La sesión de usuario actual. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI de la sesión.session
     private String e_grupos;
 
     public Evento() {
     }
 
-    public Evento(Long e_uuid, String e_uuid_real, String e_tipo, String e_perfil, String e_accion, String e_objeto, LocalDateTime e_datetime, String e_sesion, Actor e_actor, String e_usuarios, Grupo e_grupo, String e_grupos) {
+    public Evento(Long e_uuid, String e_uuid_real, String e_tipo, String e_perfil, String e_accion, String e_objeto, LocalDateTime e_datetime, String e_sesion, Actor e_actor, String e_usuarios, String e_grupos) {
         this.e_uuid = e_uuid;
         this.e_uuid_real = e_uuid_real;
         this.e_tipo = e_tipo;
@@ -64,7 +60,6 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
         this.e_sesion = e_sesion;
         this.e_actor = e_actor;
         this.e_usuarios = e_usuarios;
-        this.e_grupo = e_grupo;
         this.e_grupos = e_grupos;
     }
 
@@ -132,14 +127,6 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
         this.e_datetime = e_datetime;
     }
 
-    public Grupo getE_grupo() {
-        return e_grupo;
-    }
-
-    public void setE_grupo(Grupo e_grupo) {
-        this.e_grupo = e_grupo;
-    }
-
     public String getE_sesion() {
         return e_sesion;
     }
@@ -169,11 +156,11 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Evento evento = (Evento) o;
-        return Objects.equals(e_uuid, evento.e_uuid) && Objects.equals(e_tipo, evento.e_tipo) && Objects.equals(e_perfil, evento.e_perfil) && Objects.equals(e_accion, evento.e_accion) && Objects.equals(e_objeto, evento.e_objeto) && Objects.equals(e_datetime, evento.e_datetime) && Objects.equals(e_sesion, evento.e_sesion) && Objects.equals(e_actor, evento.e_actor) && Objects.equals(e_grupo, evento.e_grupo);
+        return Objects.equals(e_uuid, evento.e_uuid) && Objects.equals(e_tipo, evento.e_tipo) && Objects.equals(e_perfil, evento.e_perfil) && Objects.equals(e_accion, evento.e_accion) && Objects.equals(e_objeto, evento.e_objeto) && Objects.equals(e_datetime, evento.e_datetime) && Objects.equals(e_sesion, evento.e_sesion) && Objects.equals(e_actor, evento.e_actor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(e_uuid, e_tipo, e_perfil, e_accion, e_objeto, e_datetime, e_sesion, e_actor, e_grupo);
+        return Objects.hash(e_uuid, e_tipo, e_perfil, e_accion, e_objeto, e_datetime, e_sesion, e_actor);
     }
 }

@@ -1,40 +1,38 @@
 package com.modeloanalitica.uahdatos.controlador;
 
 import com.google.gson.*;
-import com.modeloanalitica.uahdatos.modelo.Actor;
-import com.modeloanalitica.uahdatos.modelo.Evento;
-import com.modeloanalitica.uahdatos.modelo.Grupo;
-import com.modeloanalitica.uahdatos.modelo.Role;
-import com.modeloanalitica.uahdatos.servicio.IActorService;
-import com.modeloanalitica.uahdatos.servicio.IEventoService;
-import com.modeloanalitica.uahdatos.servicio.IGrupoService;
-import com.modeloanalitica.uahdatos.servicio.IRoleService;
+import com.modeloanalitica.uahdatos.modelo.*;
+import com.modeloanalitica.uahdatos.servicio.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Controller
-public class DatosController {
+public class CargaController {
 
     @Autowired
     IEventoService eventoService;
     @Autowired
     IActorService actorService;
     @Autowired
-    IGrupoService grupoService;
-    @Autowired
     IRoleService roleService;
+    @Autowired
+    ICursoService cursoService;
 
-    public DatosController(IEventoService eventoService, IActorService actorService, IGrupoService grupoService, IRoleService roleService) {
+    public CargaController(IEventoService eventoService, IActorService actorService, IRoleService roleService, ICursoService cursoService) {
         this.eventoService = eventoService;
         this.actorService = actorService;
-        this.grupoService = grupoService;
         this.roleService = roleService;
+        this.cursoService = cursoService;
     }
 
     public LocalDateTime aDate(String date) {
@@ -48,14 +46,10 @@ public class DatosController {
         return null;
     }
 
-    @GetMapping("/cargar")
-    public String cargarDatos() {
+    @GetMapping("/cargarDatos")
+    public String cargarDatos() throws ParseException {
 
         Gson gson = new Gson();
-
-        String ficheroFail = "";
-        String fichero = "";
-
 
         File folder = new File("C://Users/jcher/OneDrive/Desktop/Escuela/TFM/test/");
         int registro = 1;
@@ -63,6 +57,9 @@ public class DatosController {
         for (File file : folder.listFiles()) {
             System.out.println(registro + "   " + file.getName());
             registro++;
+
+            String ficheroFail = "";
+            String fichero = "";
 
             // try (BufferedReader br = new BufferedReader(new FileReader("C://Users/jcher/OneDrive/Desktop/Escuela/TFM/test/817--output-Friday-June-03-2022-07-47-58.json"))) {
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -94,73 +91,247 @@ public class DatosController {
             // for each element of array
             for (JsonElement obj : gsonArr) {
 
-                Evento evento = new Evento();
-
                 // Object of array
                 JsonObject gsonObj = obj.getAsJsonObject();
-                //System.out.println(gsonObj.toString());
 
-                // EVENTO
                 if (!(gsonObj.get("id") == null)) {
                     if (gsonObj.getAsJsonObject("group") != null &&
                             gsonObj.getAsJsonObject("group").get("courseNumber") != null &&
                             gsonObj.getAsJsonObject("group").get("courseNumber").getAsString().equals("26L1H21")) {
 
+                        Evento evento = new Evento();
+
+                        List<Evento> eventos = eventoService.buscarTodos();
+                        List<Curso> cursos = cursoService.buscarTodos();
+                        List<Actor> actores = actorService.buscarTodos();
+                        List<Role> rolesList = roleService.buscarTodos();
+
+                        String action = "";
+
                         String type = gsonObj.get("type").getAsString();
                         String id = gsonObj.get("id").getAsString();
+                        if (!(gsonObj.get("action") == null)) {
+                            action = gsonObj.get("action").getAsString();
+                        }
 
-//                        System.out.println("=====================");
-//                        System.out.println("====    EVENT   =====");
-//                        System.out.println("=====================");
-//                        System.out.println("EVENT TIPO = " + type);
-//                        System.out.println("EVENT ID = " + id);
-
-                        evento.setE_uuid_real(id);
-                        evento.setE_tipo(type);
-
-                        // ACTOR
-                        if (!(gsonObj.getAsJsonObject("actor") == null)) {
-
-                            String actorType = gsonObj.getAsJsonObject("actor").get("type").getAsString();
-//                            System.out.println("ACTOR TYPE = " + actorType);
-
-                            Actor actor = new Actor();
-
-                            actor.setA_tipo(actorType);
-
-                            if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id") == null)) {
-                                String actorId = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id").getAsString();
-//                                System.out.println("ACTOR ID = " + actorId);
-
-                                actor.setA_id_real(actorId);
+                        if (eventos.size() == 0) {
+                            evento.setE_tipo(type);
+                            evento.setE_uuid_real(id);
+                            evento.setE_objeto(file.getName());
+                            if (!action.equals("")) {
+                                evento.setE_accion(action);
                             }
-                            if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId") == null)) {
-                                String actorUser = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
-//                                System.out.println("ACTOR USER = " + actorUser);
+                            eventoService.guardarEvento(evento);
+                        }
 
-                                actor.setA_usuario(actorUser);
+                        if (!type.equals("ViewEvent") ||
+                                (gsonObj.getAsJsonObject("actor") != null ) &&
+                                (gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString().equals("chrisitian.dopico"))) {
+                            evento.setE_tipo(type);
+                            evento.setE_usuarios(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString());
+                            evento.setE_uuid_real(id);
+                            evento.setE_objeto(file.getName());
+                            if (!action.equals("")) {
+                                evento.setE_accion(action);
                             }
+                            eventoService.guardarEvento(evento);
+                        }
 
-                            List<Actor> actores = actorService.buscarTodos();
-                            Long id_actor = null;
-                            Boolean flag = true;
 
-                            for (int i = 0; i < actores.size(); i++) {
-                                if (actores.get(i).getA_id_real().equals(actor.getA_id_real())) {
-                                    id_actor = actores.get(i).getA_id();
-                                    flag = false;
-                                }
-                            }
+                        // CURSO
+                        String grupoType = gsonObj.getAsJsonObject("group").get("type").getAsString();
 
-                            if (flag) {
-                                actorService.guardarActor(actor);
-                                evento.setE_actor(actorService.buscarActorPorId(actor.getA_id()));
-                                evento.setE_usuarios(actorService.buscarActorPorId(actor.getA_id()).getA_usuario());
-                            } else {
-                                evento.setE_actor(actorService.buscarActorPorId(id_actor));
-                                evento.setE_usuarios(actorService.buscarActorPorId(id_actor).getA_usuario());
+                        Curso curso = new Curso();
+
+                        if (!(grupoType.equals("Group"))) {
+                            String cursoId = gsonObj.getAsJsonObject("group").getAsJsonObject("extensions").get("bb:course.id").getAsString();
+                            curso.setC_id_real(cursoId);
+                        }
+
+                        if (!(gsonObj.getAsJsonObject("group").get("courseNumber") == null)) {
+                            String courseNumber = gsonObj.getAsJsonObject("group").get("courseNumber").getAsString();
+                            curso.setC_numero(courseNumber);
+                        }
+
+                        Long id_curso = null;
+                        Boolean flag_2 = true;
+
+                        //Validar si existe el grupo
+                        for (int i = 0; i < cursos.size(); i++) {
+                            if ((cursos.get(i).getC_id_real()).equals(curso.getC_id_real())) {
+                                id_curso = cursos.get(i).getId_curso();
+                                flag_2 = false;
                             }
                         }
+
+                        //Agregarlo sino existe
+                        if (flag_2) {
+                            if (!(gsonObj.get("eventTime") == null)) {
+                                String eventTime = gsonObj.get("eventTime").getAsString();
+                                LocalDateTime dateTime = aDate(eventTime);
+
+                                curso.setC_fechaInicio(dateTime);
+                            }
+
+                            if (action.equals("Started")) {
+                                curso.setC_numero_actividades(1);
+                            } else if (action.equals("Submitted")) {
+                                curso.setC_numero_actividades_terminadas(1);
+                            } else {
+                                curso.setC_numero_actividades(0);
+                                curso.setC_numero_actividades_terminadas(0);
+                            }
+                            cursoService.guardarCurso(curso);
+                        } else {
+
+                            // DATETIME
+                            if (!(gsonObj.get("eventTime") == null)) {
+                                String eventTime = gsonObj.get("eventTime").getAsString();
+                                LocalDateTime dateTime = aDate(eventTime);
+
+                                curso = cursoService.buscarCursoPorId(id_curso);
+
+                                if (curso.getC_fechaInicio().isAfter(dateTime)) {
+                                    curso.setC_fechaInicio(dateTime);
+                                }
+
+                                LocalDateTime currentTime = LocalDateTime.now();
+
+                                String start = curso.getC_fechaInicio().toString().split("T")[0].split("-")[2] + " "
+                                        + curso.getC_fechaInicio().toString().split("T")[0].split("-")[1] + " "
+                                        + curso.getC_fechaInicio().toString().split("T")[0].split("-")[0];
+
+                                LocalDateTime fix = aDate(currentTime.toString());
+                                String end = fix.toString().split("T")[0].split("-")[2] + " "
+                                        + fix.toString().split("T")[0].split("-")[1] + " "
+                                        + fix.toString().split("T")[0].split("-")[0];
+
+                                SimpleDateFormat myFormat = new SimpleDateFormat("dd MM yyyy");
+
+                                Date dateClassStart = myFormat.parse(start);
+                                Date dateClassEnd = myFormat.parse(end);
+
+                                long differenceWeek = dateClassEnd.getTime() - dateClassStart.getTime();
+                                int programLength = (int) (TimeUnit.DAYS.convert(differenceWeek, TimeUnit.MILLISECONDS) / 7) * 168;
+
+                                curso.setC_tiempo_horas(programLength);
+
+                                if (action.equals("Started")) {
+                                    curso.setC_numero_actividades(cursoService.buscarCursoPorId(id_curso).getC_numero_actividades() + 1);
+                                } else if (action.equals("Submitted")) {
+                                    curso.setC_numero_actividades_terminadas(cursoService.buscarCursoPorId(id_curso).getC_numero_actividades_terminadas() + 1);
+                                }
+
+                                // ACTOR
+                                if (!(gsonObj.getAsJsonObject("actor") == null)) {
+
+                                    Actor actor = new Actor();
+
+                                    if (!(gsonObj.getAsJsonObject("actor").get("type").getAsString() == null)) {
+                                        String actorType = gsonObj.getAsJsonObject("actor").get("type").getAsString();
+                                        actor.setA_tipo(actorType);
+                                    }
+
+                                    if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id") == null)) {
+                                        String actorId = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id").getAsString();
+                                        actor.setA_id_real(actorId);
+                                    }
+
+                                    if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId") == null)) {
+                                        String actorUser = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
+                                        actor.setA_usuario(actorUser);
+                                    }
+
+                                    Long id_actor = null;
+                                    Boolean flag_actor = true;
+
+                                    for (int i = 0; i < actores.size(); i++) {
+                                        if (actores.get(i).getA_id_real().equals(actor.getA_id_real())) {
+                                            id_actor = actores.get(i).getA_id();
+                                            flag_actor = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!(gsonObj.getAsJsonObject("membership") == null)) {
+
+                                        Role roles = new Role();
+                                        Boolean flag_role = true;
+
+                                        JsonArray data = gsonObj.getAsJsonObject("membership").get("roles").getAsJsonArray();
+                                        List rol = new ArrayList();
+
+                                        for (JsonElement event : data) {
+                                            rol.add(event.getAsString());
+                                        }
+
+                                        roles.setR_rol(rol.get(0).toString());
+
+                                        Long idRol = null;
+
+                                        for (int i = 0; i < rolesList.size(); i++) {
+                                            if (rolesList.get(i).getR_rol().equals(roles.getR_rol())) {
+                                                idRol = rolesList.get(i).getR_id();
+                                                flag_role = false;
+                                                break;
+                                            }
+                                        }
+
+                                        if (flag_role) {
+                                            roleService.guardarRol(roles);
+                                            for (int i = 0; i < rolesList.size(); i++) {
+                                                if (rolesList.get(i).getR_rol().equals(roles.getR_rol())) {
+                                                    idRol = rolesList.get(i).getR_id();
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (flag_actor) {
+                                            actor.setA_roles(roles.getR_rol());
+                                            if (action.equals("Submitted")) {
+                                                actor.setA_trabajosTerminados(1);
+                                            }
+                                            actor.setA_ultimaConcexion(dateTime);
+                                            actorService.guardarActor(actor);
+                                            actores.add(actorService.buscarActorPorId(actor.getA_id()));
+                                            curso.setC_actores(actores);
+                                            if (cursoService.buscarCursoPorId(id_curso).getC_personas() == null) {
+                                                curso.setC_personas(actorService.buscarActorPorId(actor.getA_id()).getA_usuario());
+                                            } else {
+                                                if (!cursoService.buscarCursoPorId(id_curso).getC_personas().contains(actorService.buscarActorPorId(actor.getA_id()).getA_usuario())) {
+                                                    curso.setC_personas(cursoService.buscarCursoPorId(id_curso).getC_personas() + ", " + actorService.buscarActorPorId(actor.getA_id()).getA_usuario());
+                                                }
+                                            }
+                                        } else {
+                                            actor = actorService.buscarActorPorId(id_actor);
+                                            if (action.equals("Submitted")) {
+                                                actor.setA_trabajosTerminados(actor.getA_trabajosTerminados() + 1);
+                                            }
+                                            if (actor.getA_ultimaConcexion().isBefore(dateTime)) {
+                                                actor.setA_ultimaConcexion(dateTime);
+
+                                                if (actorService.buscarActorPorId(id_actor).getA_roles() == null) {
+                                                    actor.setA_roles(roles.getR_rol());
+                                                    List<Role> listRole = new ArrayList<>();
+                                                    listRole.add(roleService.buscarRolPorID(idRol));
+                                                    actor.setA_rol(listRole);
+                                                }
+                                                actorService.actualizarActor(actor);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                cursoService.actualizarCurso(curso);
+
+
+                            }
+                        }
+
+
+
+/*
 
                         // ACTION
                         if (!(gsonObj.get("action") == null)) {
@@ -194,63 +365,13 @@ public class DatosController {
 //                            System.out.println("TARGET TYPE = " + TargetType);
                         }
 
-                        // DATETIME
-                        if (!(gsonObj.get("eventTime") == null)) {
-                            String eventTime = gsonObj.get("eventTime").getAsString();
-                            LocalDateTime dateTime = aDate(eventTime);
 
-//                            System.out.println("EVENTTIME = " + dateTime);
-
-                            evento.setE_datetime(dateTime);
-                        }
 
                         // EDAPP
                         if (!(gsonObj.getAsJsonObject("edApp") == null)) {
                             String edAppType = gsonObj.getAsJsonObject("edApp").get("type").getAsString();
 
 //                            System.out.println("EDAPP TYPE = " + edAppType);
-                        }
-
-                        // GRUPO
-                        if (!(gsonObj.getAsJsonObject("group") == null)) {
-                            String grupoType = gsonObj.getAsJsonObject("group").get("type").getAsString();
-
-//                            System.out.println("GROUP TYPE = " + grupoType);
-
-                            Grupo grupo = new Grupo();
-                            grupo.setG_tipo(grupoType);
-
-                            if (!(grupoType.equals("Group"))) {
-                                String grupoId = gsonObj.getAsJsonObject("group").getAsJsonObject("extensions").get("bb:course.id").getAsString();
-//                                System.out.println("GROUP ID = " + grupoId);
-                                grupo.setG_id_real(grupoId);
-                            }
-
-                            if (!(gsonObj.getAsJsonObject("group").get("courseNumber") == null)) {
-                                String grupoNumber = gsonObj.getAsJsonObject("group").get("courseNumber").getAsString();
-//                                System.out.println("GROUP NUMBER = " + grupoNumber);
-                                grupo.setG_numero(grupoNumber);
-                            }
-
-                            List<Grupo> grupos = grupoService.buscarTodos();
-                            Long id_grupo = null;
-                            Boolean flag_2 = true;
-
-                            for (int i = 0; i < grupos.size(); i++) {
-                                if ((grupos.get(i).getG_id_real().equals(grupo.getG_id_real())) && (grupos.get(i).getG_tipo().equals(grupo.getG_tipo()))) {
-                                    id_grupo = grupos.get(i).getG_id();
-                                    flag_2 = false;
-                                }
-                            }
-
-                            if (flag_2) {
-                                grupoService.guardarGrupo(grupo);
-                                evento.setE_grupo(grupoService.buscarGrupoPorId(grupo.getG_id()));
-                                evento.setE_grupos(grupoService.buscarGrupoPorId(grupo.getG_id()).getG_numero());
-                            } else {
-                                evento.setE_grupo(grupoService.buscarGrupoPorId(id_grupo));
-                                evento.setE_grupos(grupoService.buscarGrupoPorId(id_grupo).getG_numero());
-                            }
                         }
 
                         // MEMBERSHIP
@@ -345,7 +466,7 @@ public class DatosController {
                                 newActor.setA_id_real(membershipExtUserId);
                                 newActor.setA_tipo();
                                 newActor.setA_usuario(membershipExtUserExtId);
-                            }*/
+                            }
 
                             if (flag_grupo) {
                                 grupo.setG_id_real(membershipExtCourseId);
@@ -405,12 +526,18 @@ public class DatosController {
                             String federatedSessionUserExtId = gsonObj.getAsJsonObject("federatedSession").getAsJsonObject("user").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
 //                            System.out.println("FEDERATED SESSION USER EXT ID = " + federatedSessionUserExtId);
                         }
-                        eventoService.guardarEvento(evento);
+*/
+
+                        // eventoService.guardarEvento(evento);
                     }
                 }
             }
+            //file.delete();
         }
         System.out.println("Total de archivos cargados = " + --registro);
         return "redirect:/";
     }
+
+
 }
+

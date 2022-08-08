@@ -12,6 +12,8 @@
 
 <body>
 <div class="loader"></div>
+
+
 <nav class="navbar navbar-expand-lg navbar-light bg-dark border border-light">
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
@@ -41,20 +43,20 @@
                     <table class="table table-striped table bordered">
                         <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
-                            <th>ID-real</th>
-                            <th>Tipo</th>
-                            <th>Usuario</th>
-                            <th>Roles</th>
+                            <th>Número de curso</th>
+                            <th>Número de Actividades</th>
+                            <th>Número de Actividades Terminadas</th>
+                            <th>Tiempo en Horas</th>
+                            <th>Personas</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="actor: ${actores}">
-                            <td th:text="${actor.a_id}"></td>
-                            <td th:text="${actor.a_id_real}"></td>
-                            <td th:text="${actor.a_tipo}"></td>
-                            <td th:text="${actor.a_usuario}"></td>
-                            <td th:text="${actor.a_roles}"></td>
+                        <tr th:each="curso: ${cursos}">
+                            <td th:text="${curso.c_numero}"></td>
+                            <td th:text="${curso.c_numero_actividades}"></td>
+                            <td th:text="${curso.c_numero_actividades_terminadas}"></td>
+                            <td th:text="${curso.c_tiempo_horas}"></td>
+                            <td th:text="${curso.c_personas}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -62,6 +64,7 @@
             </div>
         </div>
     </div>
+
     <script>
         $(window).on('load', function () {
             setTimeout(function () {

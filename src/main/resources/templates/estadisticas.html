@@ -13,16 +13,62 @@
 <body>
 <div class="loader"></div>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="nav-link active" aria-current="page" th:href="@{/}">Ir al inicio</a>
-                <a class="nav-link" th:href="@{/aactores}">Actores</a>
-            </div>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-dark border border-light">
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a class="nav-link active text-light" aria-current="page" th:href="@{/}">Ir al inicio</a>
+            <a class="nav-link text-light" th:href="@{/ggrupos}">Grupo</a>
+            <a class="nav-link text-light" th:href="@{/aactores}">Actores</a>
+            <a class="nav-link text-light" th:href="@{/eestudiantes}">Estudiantes</a>
         </div>
     </div>
 </nav>
+
+<div class="row">
+    <div class="col-3 bg-dark border-right p-3" id="sidebar">
+        <h2 class="text-light m-3">Menú</h2>
+        <hr>
+        <ul class="list-group m-3">
+            <a th:href="@{/estadisticas}" class="list-group-item">Principal</a>
+            <a class="list-group-item">Buscar por Estudiante</a>
+            <a class="list-group-item">Buscar por Actividad</a>
+        </ul>
+    </div>
+
+    <div class="col mt-2">
+
+        <h2>Estadísticas</h2>
+        <hr>
+        <div class="container">
+            <div class="row d-flex">
+                <div class="col-6">
+                    <a th:href="@{/ggrupos}" class="list-group-item m-1">
+                        <h4 th:text="'Nº de Actividades Terminadas: ' + ${ actividades_terminadas } + '/' + ${ actividades }"></h4>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a th:href="@{/ggrupos}" class="list-group-item m-1">
+                        <h4 th:text="'Tiempo total de asignatura: ' + ${ t_horas } + ' horas'"></h4>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a th:href="@{/ggrupos}" class="list-group-item m-1">
+                        <h4 th:text="'Nº de Semanas: ' + ${ t_horas/168 }"></h4>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a  th:href="@{/eestudiantes}" class="list-group-item m-1">
+                        <h4 th:text="'Nº de Estudiantes: ' + ${ n_estudiantes }"></h4>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script>
     $(window).on('load', function () {
@@ -32,6 +78,16 @@
     });
 </script>
 <style>
+    html, body {
+        height: 100%;
+    }
+
+    #sidebar {
+        height: 100%;
+        min-height: 100vh;
+        min-width: 180px;
+    }
+
     .loader {
         position: fixed;
         z-index: 25000;

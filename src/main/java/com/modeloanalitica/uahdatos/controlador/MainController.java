@@ -28,16 +28,9 @@ public class MainController {
         this.cursoService = cursoService;
     }
 
+
     @GetMapping("/")
     public String MainIndex(Model model) {
-
-        model.addAttribute("eventos", eventoService.buscarTodos());
-
-        return "index";
-    }
-
-    @GetMapping("/estadisticas")
-    public String Estadisticas(Model model) {
 
         List<Actor> estudiantes = new ArrayList<>();
         for (int i = 0; i < actorService.buscarTodos().size(); i++) {
@@ -58,13 +51,21 @@ public class MainController {
 
         model.addAttribute("n_estudiantes", estudiantes.size());
 
-        return "estadisticas";
+        return "index";
+    }
+
+    @GetMapping("/eeventos")
+    public String Eventos(Model model) {
+
+        model.addAttribute("eventos", eventoService.buscarTodos());
+
+        return "eventos";
     }
 
     @GetMapping("/aactores")
     public String Actores(Model model) {
         model.addAttribute("actores", actorService.buscarTodos());
-        return "actores/actores";
+        return "integrantes";
     }
 
     @GetMapping("/eestudiantes")
@@ -76,13 +77,13 @@ public class MainController {
             }
         }
         model.addAttribute("estudiantes", estudiantes);
-        return "actores/estudiantes";
+        return "estudiantes";
     }
 
     @GetMapping("/ggrupos")
     public String Grupo(Model model) {
         model.addAttribute("cursos", cursoService.buscarTodos());
-        return "grupo/grupos";
+        return "grupos";
     }
 
 

@@ -10,7 +10,6 @@ public interface IRoleDAO {
 
     Role buscarRolPorId(Long r_id);
 
-    //SE DESPRECIAN PUES NO ES REQUISITO DEL SISTEMA
     void guardarRol(Role rol);
 
     void eliminarRol(Long r_id);

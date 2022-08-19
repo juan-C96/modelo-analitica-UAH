@@ -35,6 +35,17 @@ public class ActorDAOImpl implements IActorDAO {
     }
 
     @Override
+    public Actor buscarPorUsuario(String username) {
+        List<Actor> actores = actorJPA.findAll();
+        for(int i = 0; i < actores.size(); i++){
+            if(actores.get(i).getA_usuario().equals(username)){
+                return actores.get(i);
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void guardarActor(Actor actor) {
         actorJPA.save(actor);
     }

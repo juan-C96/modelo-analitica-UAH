@@ -27,9 +27,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/}">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
+            <img class="w-75" src="img/logo-uah-blanco.png"/>
         </a>
 
         <hr class="sidebar-divider my-0">
@@ -49,6 +47,18 @@
             <a class="nav-link" th:href="@{/ggrupos}">
                 <i class="fas fa-fw fa-school"></i>
                 <span>Grupo</span></a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/aactividades}">
+                <i class="fas fa-fw fa-book-open"></i>
+                <span>Actividades</span></a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/ddias}">
+                <i class="fas fa-fw fa-calendar-alt"></i>
+                <span>Actividades</span></a>
         </li>
 
         <li class="nav-item active">
@@ -84,14 +94,6 @@
 
             <!-- Topbar -->
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                <!-- Sidebar Toggle (Topbar) -->
-                <form class="form-inline">
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                </form>
-
 
                 <h4 class="d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 font-weight-bold text-primary">
                     Modelo de Analítica de Aprendizaje</h4>
@@ -150,6 +152,7 @@
                                                 <th>ID-real</th>
                                                 <th>Usuario</th>
                                                 <th>Actividades terminadas</th>
+                                                <th>Cantidad de interacciones</th>
                                                 <th>Última conexión</th>
                                             </tr>
                                             </thead>
@@ -158,6 +161,7 @@
                                                 <td th:text="${actor.a_id_real}"></td>
                                                 <td th:text="${actor.a_usuario}"></td>
                                                 <td th:text="${actor.a_trabajosTerminados}"></td>
+                                                <td th:text="${actor.a_interacciones}"></td>
                                                 <td th:text="${actor.a_ultimaConcexion}"></td>
                                             </tr>
                                             </tbody>
@@ -196,7 +200,7 @@
             <div class="modal-body">Selecciona "Logout" si realmente desea cerrar la sesión.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="login.html">Logout</a>
+                <a class="btn btn-primary" th:href="@{/login}">Logout</a>
             </div>
         </div>
     </div>

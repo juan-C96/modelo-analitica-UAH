@@ -27,10 +27,9 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/}">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
+            <img class="w-75" src="img/logo-uah-blanco.png"/>
         </a>
+
 
         <hr class="sidebar-divider my-0">
         <li class="nav-item active">
@@ -49,6 +48,18 @@
             <a class="nav-link" th:href="@{/ggrupos}">
                 <i class="fas fa-fw fa-school"></i>
                 <span>Grupo</span></a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/aactividades}">
+                <i class="fas fa-fw fa-book-open"></i>
+                <span>Actividades</span></a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/ddias}">
+                <i class="fas fa-fw fa-calendar-alt"></i>
+                <span>Actividades</span></a>
         </li>
 
         <li class="nav-item">
@@ -84,14 +95,6 @@
 
             <!-- Topbar -->
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                <!-- Sidebar Toggle (Topbar) -->
-                <form class="form-inline">
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                </form>
-
 
                 <h4 class="d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 font-weight-bold text-primary">
                     Modelo de Analítica de Aprendizaje</h4>
@@ -136,8 +139,63 @@
                 <div class="loader"></div>
 
                 <!-- Page Heading -->
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Estadísticas</h1>
+                <div class="row">
+                    <div class="col-xl-6 col-md-6 mb-4">
+                        <div class="card border-left-danger shadow h-100 py-2">
+                            <div class="card-body">
+                                <a th:href="@{/ggrupos}">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                Curso
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                26L1H21 - Desarrollo de Software Avanzado</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Fecha de inicio
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"
+                                                 th:text="${ f_inicio }"></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-hourglass-start fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-dark shadow h-100 py-2">
+                            <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+                                                Fecha de fin
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"
+                                                 th:text="${ f_fin }"></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-hourglass-end fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -147,17 +205,19 @@
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-primary shadow h-100 py-2">
                             <div class="card-body">
-                                <a th:href="@{/ggrupos}">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Actividades finalizadas</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${ actividades_terminadas }"></div>
+                                <a th:href="@{/aactividades}">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Actividades
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"
+                                                 th:text="${ actividades }"></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
+                                        </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
                                 </a>
                             </div>
                         </div>
@@ -167,16 +227,18 @@
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <a th:href="@{/ggrupos}">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            Tiempo total (Horas)</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${ t_horas }"></div>
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Tiempo total (Horas)
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"
+                                                 th:text="${ t_horas }"></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                        </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
                                 </a>
                             </div>
                         </div>
@@ -186,20 +248,22 @@
                         <div class="card border-left-info shadow h-100 py-2">
                             <div class="card-body">
                                 <a th:href="@{/ggrupos}">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Número de semanas
-                                        </div>
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col-auto">
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" th:text="${ t_horas/168 }"></div>
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Número
+                                                de semanas
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"
+                                                         id="semanas" th:text="${ t_horas/168 }"></div>
+                                                </div>
                                             </div>
                                         </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                                        </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
                                 </a>
                             </div>
                         </div>
@@ -209,29 +273,66 @@
                         <div class="card border-left-warning shadow h-100 py-2">
                             <div class="card-body">
                                 <a th:href="@{/eestudiantes}">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Cantidad de estudiantes</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${ n_estudiantes }"></div>
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Cantidad de estudiantes
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"
+                                                 th:text="${ n_estudiantes }"></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                                        </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-
+                <div class="row">
+                    <div class="col-xl-4 col-lg-7">
+                        <!-- Bar Chart Semanas-->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Cantidad de estudiantes conectados por
+                                    semana</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-bar">
+                                    <canvas id="myBarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8 col-lg-7">
+                        <p id="fechas" th:text="${fechas}" style="display: none"></p>
+                        <p id="conectados_por_dia" th:text="${conectados_por_dia}" style="display: none"></p>
+                        <!-- Bar Chart Días-->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <a th:href="@{/ddias}">
+                                <h6 class="m-0 font-weight-bold text-primary">Cantidad de usuarios conectados por
+                                    día</h6>
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-bar">
+                                    <canvas id="myBarChartDias"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- End of Main Content -->
+
         </div>
         <!-- End of Main Content -->
     </div>
-    <!-- End of Content Wrapper -->
+    <!-- End of Main Content -->
+</div>
+<!-- End of Content Wrapper -->
 </div>
 <!-- End of Page Wrapper -->
 
@@ -254,7 +355,7 @@
             <div class="modal-body">Selecciona "Logout" si realmente desea cerrar la sesión.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="login.html">Logout</a>
+                <a class="btn btn-primary" th:href="@{/login}">Logout</a>
             </div>
         </div>
     </div>
@@ -274,8 +375,14 @@
 <script src="vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
+<!-- Page level plugins -->
+<script src="vendor/chart.js/Chart.min.js"></script>
+
 <!-- Page level custom scripts -->
 <script src="js/demo/datatables-demo.js"></script>
+
+<script src="js/demo/chart-bar.js"></script>
+<script src="js/demo/chart-pie-demo.js"></script>
 
 </body>
 

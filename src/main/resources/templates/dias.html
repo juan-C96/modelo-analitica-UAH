@@ -55,7 +55,7 @@
         <span>Actividades</span></a>
     </li>
 
-    <li class="nav-item">
+    <li class="nav-item active">
       <a class="nav-link" th:href="@{/ddias}">
         <i class="fas fa-fw fa-calendar-alt"></i>
         <span>Actividades</span></a>
@@ -67,7 +67,7 @@
         <span>Estudiantes</span></a>
     </li>
 
-    <li class="nav-item active">
+    <li class="nav-item">
       <a class="nav-link" th:href="@{/aactores}">
         <i class="fas fa-fw fa-users"></i>
         <span>Integrantes</span></a>
@@ -142,27 +142,21 @@
               <ul class="list-group">
                 <div class="card card-body shadow mb-4">
                   <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Integrantes del curso</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Estudiantes</h6>
                   </div>
                   <br>
                   <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                       <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>ID-real</th>
-                        <th>Tipo</th>
-                        <th>Usuario</th>
-                        <th>Roles</th>
+                        <th>Fecha</th>
+                        <th>Usuarios conectados</th>
                       </tr>
                       </thead>
                       <tbody>
-                      <tr th:each="actor: ${actores}">
-                        <td th:text="${actor.a_id}"></td>
-                        <td th:text="${actor.a_id_real}"></td>
-                        <td th:text="${actor.a_tipo}"></td>
-                        <td th:text="${actor.a_usuario}"></td>
-                        <td th:text="${actor.a_roles}"></td>
+                      <tr th:each="datetime: ${datetimes}">
+                        <td th:text="${datetime.date_fecha}"></td>
+                        <td th:text="${datetime.date_personasString}"></td>
                       </tr>
                       </tbody>
                     </table>

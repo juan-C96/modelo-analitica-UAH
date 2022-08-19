@@ -10,7 +10,8 @@ public interface IActorDAO {
 
     Actor buscarActorPorId(Long a_id);
 
-    //SE DESPRECIAN PUES NO ES REQUISITO DEL SISTEMA
+    Actor buscarPorUsuario(String username);
+
     void guardarActor(Actor actor);
 
     void eliminarActor(Long a_id);

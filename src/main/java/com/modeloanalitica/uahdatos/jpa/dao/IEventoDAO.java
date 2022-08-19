@@ -10,7 +10,6 @@ public interface IEventoDAO {
 
     Evento buscarEventoPorId(Long e_uuid);
 
-    //SE DESPRECIAN PUES NO ES REQUISITO DEL SISTEMA
     void guardarEvento(Evento evento);
 
     void eliminarEvento(Long e_uuid);

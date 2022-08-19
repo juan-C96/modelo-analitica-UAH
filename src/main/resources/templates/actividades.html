@@ -49,7 +49,7 @@
                 <span>Grupo</span></a>
         </li>
 
-        <li class="nav-item">
+        <li class="nav-item active">
             <a class="nav-link" th:href="@{/aactividades}">
                 <i class="fas fa-fw fa-book-open"></i>
                 <span>Actividades</span></a>
@@ -73,7 +73,7 @@
                 <span>Integrantes</span></a>
         </li>
 
-        <li class="nav-item active">
+        <li class="nav-item">
             <a class="nav-link" th:href="@{/eeventos}">
                 <i class="fas fa-fw fa-stream"></i>
                 <span>Eventos</span></a>
@@ -137,40 +137,30 @@
                 </script>
                 <div class="loader"></div>
                 <div class="container">
-                    <div class="container">
-                        <a th:href="@{/cargarDatos}" class="btn btn-primary">Cargar datos</a>
-                    </div>
-                    <br>
                     <div class="row">
                         <div class="card bg-light" style="padding:3px;">
                             <ul class="list-group">
                                 <div class="card card-body shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Eventos</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Actividades</h6>
                                     </div>
                                     <br>
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                             <thead>
                                             <tr>
-                                                <th>UUID</th>
-                                                <th>Accion</th>
-                                                <th>ID-real</th>
-                                                <th>Datetime</th>
-                                                <th>Tipo</th>
-                                                <th>Objeto</th>
-                                                <th>Usuario</th>
+                                                <th>Id de Actividad</th>
+                                                <th>Título de Actividad</th>
+                                                <th>Tipo de Actividad</th>
+                                                <th>Estudiantes que finalizaron</th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr th:each="evento: ${eventos}">
-                                                <td th:text="${evento.e_uuid}"></td>
-                                                <td th:text="${evento.e_accion}"></td>
-                                                <td th:text="${evento.e_uuid_real}"></td>
-                                                <td th:text="${evento.e_datetime}"></td>
-                                                <td th:text="${evento.e_tipo}"></td>
-                                                <td th:text="${evento.e_objeto}"></td>
-                                                <td th:text="${evento.e_usuarios}"></td>
+                                            <tr th:each="actividad: ${actividades}">
+                                                <td th:text="${actividad.activity_id}"></td>
+                                                <td th:text="${actividad.activity_name}"></td>
+                                                <td th:text="${actividad.activity_type}"></td>
+                                                <td th:text="${actividad.activity_personas}"></td>
                                             </tr>
                                             </tbody>
                                         </table>

@@ -30,6 +30,10 @@ public class Curso {
     @DateTimeFormat(pattern = "YYYY-MM-DD:mm:ss")
     private LocalDateTime c_fechaInicio;
 
+    @Column(name = "c_fechaFin")
+    @DateTimeFormat(pattern = "YYYY-MM-DD:mm:ss")
+    private LocalDateTime c_fechafin;
+
     @Column(name = "c_tiempo_horas")
     private int c_tiempo_horas;
 
@@ -40,19 +44,26 @@ public class Curso {
     @Column(name = "c_personas")
     private String c_personas;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "t_curso_actividad", joinColumns = @JoinColumn(name = "id_curso", referencedColumnName = "id_curso"), inverseJoinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "activity_id"))
+    List<Actividad> c_actividades;
+
+
     public Curso() {
     }
 
-    public Curso(Long id_curso, String c_id_real, String c_numero, int c_numero_actividades, int c_numero_actividades_terminadas, LocalDateTime c_fechaInicio, int c_tiempo_horas, List<Actor> c_actores, String c_personas) {
+    public Curso(Long id_curso, String c_id_real, String c_numero, int c_numero_actividades, int c_numero_actividades_terminadas, LocalDateTime c_fechaInicio, LocalDateTime c_fechafin, int c_tiempo_horas, List<Actor> c_actores, String c_personas, List<Actividad> c_actividades) {
         this.id_curso = id_curso;
         this.c_id_real = c_id_real;
         this.c_numero = c_numero;
         this.c_numero_actividades = c_numero_actividades;
         this.c_numero_actividades_terminadas = c_numero_actividades_terminadas;
         this.c_fechaInicio = c_fechaInicio;
+        this.c_fechafin = c_fechafin;
         this.c_tiempo_horas = c_tiempo_horas;
         this.c_actores = c_actores;
         this.c_personas = c_personas;
+        this.c_actividades = c_actividades;
     }
 
     public Long getId_curso() {
@@ -125,5 +136,21 @@ public class Curso {
 
     public void setC_personas(String c_personas) {
         this.c_personas = c_personas;
+    }
+
+    public List<Actividad> getC_actividades() {
+        return c_actividades;
+    }
+
+    public void setC_actividades(List<Actividad> c_actividades) {
+        this.c_actividades = c_actividades;
+    }
+
+    public LocalDateTime getC_fechafin() {
+        return c_fechafin;
+    }
+
+    public void setC_fechafin(LocalDateTime c_fechafin) {
+        this.c_fechafin = c_fechafin;
     }
 }

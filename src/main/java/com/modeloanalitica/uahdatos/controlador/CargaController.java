@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,12 +28,18 @@ public class CargaController {
     IRoleService roleService;
     @Autowired
     ICursoService cursoService;
+    @Autowired
+    IActividadService actividadService;
+    @Autowired
+    IDateTimeService dateTimeService;
 
-    public CargaController(IEventoService eventoService, IActorService actorService, IRoleService roleService, ICursoService cursoService) {
+    public CargaController(IEventoService eventoService, IActorService actorService, IRoleService roleService, ICursoService cursoService, IActividadService actividadService, IDateTimeService dateTimeService) {
         this.eventoService = eventoService;
         this.actorService = actorService;
         this.roleService = roleService;
         this.cursoService = cursoService;
+        this.actividadService = actividadService;
+        this.dateTimeService = dateTimeService;
     }
 
     public LocalDateTime aDate(String date) {
@@ -102,9 +109,11 @@ public class CargaController {
                         Evento evento = new Evento();
 
                         List<Evento> eventos = eventoService.buscarTodos();
+                        List<Datetime> datetimes = dateTimeService.buscarTodos();
                         List<Curso> cursos = cursoService.buscarTodos();
                         List<Actor> actores = actorService.buscarTodos();
                         List<Role> rolesList = roleService.buscarTodos();
+                        List<Actividad> actividades = actividadService.buscarTodos();
 
                         String action = "";
 
@@ -114,27 +123,14 @@ public class CargaController {
                             action = gsonObj.get("action").getAsString();
                         }
 
-                        if (eventos.size() == 0) {
-                            evento.setE_tipo(type);
-                            evento.setE_uuid_real(id);
-                            evento.setE_objeto(file.getName());
-                            if (!action.equals("")) {
-                                evento.setE_accion(action);
-                            }
-                            eventoService.guardarEvento(evento);
+                        evento.setE_tipo(type);
+                        evento.setE_uuid_real(id);
+                        evento.setE_objeto(file.getName());
+                        if (!action.equals("")) {
+                            evento.setE_accion(action);
                         }
-
-                        if (!type.equals("ViewEvent") ||
-                                (gsonObj.getAsJsonObject("actor") != null ) &&
-                                (gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString().equals("chrisitian.dopico"))) {
-                            evento.setE_tipo(type);
+                        if (gsonObj.getAsJsonObject("actor") != null) {
                             evento.setE_usuarios(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString());
-                            evento.setE_uuid_real(id);
-                            evento.setE_objeto(file.getName());
-                            if (!action.equals("")) {
-                                evento.setE_accion(action);
-                            }
-                            eventoService.guardarEvento(evento);
                         }
 
 
@@ -142,6 +138,8 @@ public class CargaController {
                         String grupoType = gsonObj.getAsJsonObject("group").get("type").getAsString();
 
                         Curso curso = new Curso();
+                        Datetime datetime = new Datetime();
+                        Actividad actividad = new Actividad();
 
                         if (!(grupoType.equals("Group"))) {
                             String cursoId = gsonObj.getAsJsonObject("group").getAsJsonObject("extensions").get("bb:course.id").getAsString();
@@ -169,57 +167,19 @@ public class CargaController {
                             if (!(gsonObj.get("eventTime") == null)) {
                                 String eventTime = gsonObj.get("eventTime").getAsString();
                                 LocalDateTime dateTime = aDate(eventTime);
+                                evento.setE_datetime(dateTime);
+
+                                String fecha_date = dateTime.toString().substring(0,10);
+                                datetime.setDate_fecha(fecha_date);
 
                                 curso.setC_fechaInicio(dateTime);
-                            }
+                                curso.setC_fechafin(dateTime);
 
-                            if (action.equals("Started")) {
-                                curso.setC_numero_actividades(1);
-                            } else if (action.equals("Submitted")) {
-                                curso.setC_numero_actividades_terminadas(1);
-                            } else {
-                                curso.setC_numero_actividades(0);
-                                curso.setC_numero_actividades_terminadas(0);
-                            }
-                            cursoService.guardarCurso(curso);
-                        } else {
-
-                            // DATETIME
-                            if (!(gsonObj.get("eventTime") == null)) {
-                                String eventTime = gsonObj.get("eventTime").getAsString();
-                                LocalDateTime dateTime = aDate(eventTime);
-
-                                curso = cursoService.buscarCursoPorId(id_curso);
-
-                                if (curso.getC_fechaInicio().isAfter(dateTime)) {
-                                    curso.setC_fechaInicio(dateTime);
-                                }
-
-                                LocalDateTime currentTime = LocalDateTime.now();
-
-                                String start = curso.getC_fechaInicio().toString().split("T")[0].split("-")[2] + " "
-                                        + curso.getC_fechaInicio().toString().split("T")[0].split("-")[1] + " "
-                                        + curso.getC_fechaInicio().toString().split("T")[0].split("-")[0];
-
-                                LocalDateTime fix = aDate(currentTime.toString());
-                                String end = fix.toString().split("T")[0].split("-")[2] + " "
-                                        + fix.toString().split("T")[0].split("-")[1] + " "
-                                        + fix.toString().split("T")[0].split("-")[0];
-
-                                SimpleDateFormat myFormat = new SimpleDateFormat("dd MM yyyy");
-
-                                Date dateClassStart = myFormat.parse(start);
-                                Date dateClassEnd = myFormat.parse(end);
-
-                                long differenceWeek = dateClassEnd.getTime() - dateClassStart.getTime();
-                                int programLength = (int) (TimeUnit.DAYS.convert(differenceWeek, TimeUnit.MILLISECONDS) / 7) * 168;
-
-                                curso.setC_tiempo_horas(programLength);
-
-                                if (action.equals("Started")) {
-                                    curso.setC_numero_actividades(cursoService.buscarCursoPorId(id_curso).getC_numero_actividades() + 1);
-                                } else if (action.equals("Submitted")) {
-                                    curso.setC_numero_actividades_terminadas(cursoService.buscarCursoPorId(id_curso).getC_numero_actividades_terminadas() + 1);
+                                if (action.equals("Started") || action.equals("Submitted")) {
+                                    if (!(gsonObj.get("generated") == null)) {
+                                        actividad.setActivity_name(gsonObj.getAsJsonObject("generated").getAsJsonObject("assignable").get("name").getAsString());
+                                        actividad.setActivity_type(gsonObj.getAsJsonObject("generated").getAsJsonObject("assignable").get("type").getAsString());
+                                    }
                                 }
 
                                 // ACTOR
@@ -237,8 +197,180 @@ public class CargaController {
                                         actor.setA_id_real(actorId);
                                     }
 
+                                    String actorUser = "";
                                     if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId") == null)) {
-                                        String actorUser = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
+                                        actorUser = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
+                                        actor.setA_usuario(actorUser);
+                                    }
+
+                                    if (!(gsonObj.getAsJsonObject("membership") == null)) {
+
+                                        Role roles = new Role();
+                                        boolean flag_rol = true;
+
+                                        JsonArray data = gsonObj.getAsJsonObject("membership").get("roles").getAsJsonArray();
+                                        List rol = new ArrayList();
+                                        Collection<Role> roleCollection = new ArrayList<>();
+
+                                        for (JsonElement event : data) {
+                                            rol.add(event.getAsString());
+                                        }
+
+                                        roles.setR_rol(rol.get(0).toString());
+
+                                        for (int i = 0; i < rolesList.size(); i++) {
+                                            if (rolesList.get(i).getR_rol().equals(roles.getR_rol())) {
+                                                roleCollection.add(rolesList.get(i));
+                                                actor.setA_rol(roleCollection);
+                                                flag_rol = false;
+                                            }
+                                        }
+
+                                        if (flag_rol) {
+                                            roleService.guardarRol(roles);
+                                            rolesList = roleService.buscarTodos();
+                                            for (int i = 0; i < rolesList.size(); i++) {
+                                                if (rolesList.get(i).getR_rol().equals(roles.getR_rol())) {
+                                                    roleCollection.add(rolesList.get(i));
+                                                    actor.setA_rol(roleCollection);
+                                                }
+                                            }
+                                        }
+
+                                        actor.setA_roles(roles.getR_rol());
+                                        if (action.equals("Submitted")) {
+                                            actor.setA_trabajosTerminados(1);
+                                        }
+                                        actor.setA_interacciones(1);
+                                        actor.setA_ultimaConcexion(dateTime);
+                                        actorService.guardarActor(actor);
+                                        List<Actor> actors = new ArrayList<>();
+                                        Actor first_actor = actorService.buscarTodos().get(0);
+                                        actors.add(first_actor);
+                                        curso.setC_actores(actors);
+                                        curso.setC_personas(first_actor.getA_usuario());
+                                        if (action.equals("Submitted")) {
+                                            List<String> nombres = new ArrayList<>();
+                                            nombres.add(actorUser);
+                                            actividad.setActivity_personas(nombres);
+                                            actividad.setActivity_actors_comleted(actors);
+                                        }
+
+                                        List<String> conectadosS = new ArrayList<>();
+                                        List<Actor> conectadosA = new ArrayList<>();
+                                        conectadosS.add(actorUser);
+                                        conectadosA.add(actor);
+                                        datetime.setDate_personas(conectadosS);
+                                        datetime.setDate_personas_conectadas(conectadosA);
+                                        datetime.setDate_personasString(conectadosS.toString());
+                                        dateTimeService.actualizarDateTime(datetime);
+                                    }
+                                }
+                            }
+
+                            if (action.equals("Started") || action.equals("Submitted")) {
+                                actividadService.guardarActividad(actividad);
+                                List<Actividad> newListActivities = new ArrayList<>();
+                                newListActivities.add(actividadService.buscarTodos().get(0));
+                                curso.setC_actividades(newListActivities);
+                            }
+
+                            cursoService.guardarCurso(curso);
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        } else {
+
+                            curso = cursoService.buscarCursoPorId(id_curso);
+                            boolean flag_actividad = true;
+                            List<Actor> activities_completed = new ArrayList<>();
+
+                            if (action.equals("Started") || action.equals("Submitted")) {
+                                String actividad_name = gsonObj.getAsJsonObject("generated").getAsJsonObject("assignable").get("name").getAsString();
+
+                                for (int i = 0; i < actividades.size(); i++) {
+                                    if (actividades.get(i).getActivity_name().equals(actividad_name)) {
+                                        activities_completed = actividades.get(i).getActivity_actors_comleted();
+                                        actividad = actividadService.buscarActividadPorId(actividades.get(i).getActivity_id());
+                                        flag_actividad = false;
+                                        break;
+                                    }
+                                }
+                                if (flag_actividad) {
+                                    if (!(gsonObj.get("generated") == null)) {
+                                        actividad.setActivity_name(gsonObj.getAsJsonObject("generated").getAsJsonObject("assignable").get("name").getAsString());
+                                        actividad.setActivity_type(gsonObj.getAsJsonObject("generated").getAsJsonObject("assignable").get("type").getAsString());
+                                        actividad.setActivity_actors_comleted(activities_completed);
+                                    }
+                                    actividades.add(actividad);
+                                    curso.setC_actividades(actividades);
+                                    curso.setC_numero_actividades(actividades.size());
+                                }
+                            }
+
+
+                            // DATETIME
+                            if (!(gsonObj.get("eventTime") == null)) {
+                                String eventTime = gsonObj.get("eventTime").getAsString();
+                                LocalDateTime dateTime = aDate(eventTime);
+
+                                evento.setE_datetime(dateTime);
+
+                                if (curso.getC_fechaInicio().isAfter(dateTime)) {
+                                    curso.setC_fechaInicio(dateTime);
+                                }
+
+                                LocalDateTime currentTime;
+
+                                if(curso.getC_fechafin().isBefore(dateTime)){
+                                    curso.setC_fechafin(dateTime);
+                                    currentTime = dateTime;
+                                } else {
+                                    currentTime = curso.getC_fechafin();
+                                }
+
+                                String start = curso.getC_fechaInicio().toString().split("T")[0].split("-")[2] + " "
+                                        + curso.getC_fechaInicio().toString().split("T")[0].split("-")[1] + " "
+                                        + curso.getC_fechaInicio().toString().split("T")[0].split("-")[0];
+
+                                LocalDateTime fix;
+                                if(currentTime.toString().length() > 19){
+                                    fix = aDate(currentTime.toString());
+                                } else {
+                                    fix = currentTime;
+                                }
+
+                                String end = fix.toString().split("T")[0].split("-")[2] + " "
+                                        + fix.toString().split("T")[0].split("-")[1] + " "
+                                        + fix.toString().split("T")[0].split("-")[0];
+
+                                SimpleDateFormat myFormat = new SimpleDateFormat("dd MM yyyy");
+
+                                Date dateClassStart = myFormat.parse(start);
+                                Date dateClassEnd = myFormat.parse(end);
+
+                                long differenceWeek = dateClassEnd.getTime() - dateClassStart.getTime();
+                                int programLength = (int) (TimeUnit.DAYS.convert(differenceWeek, TimeUnit.MILLISECONDS) / 7) * 168;
+
+                                curso.setC_tiempo_horas(programLength);
+
+                                // ACTOR
+                                if (!(gsonObj.getAsJsonObject("actor") == null)) {
+
+                                    Actor actor = new Actor();
+
+                                    if (!(gsonObj.getAsJsonObject("actor").get("type").getAsString() == null)) {
+                                        String actorType = gsonObj.getAsJsonObject("actor").get("type").getAsString();
+                                        actor.setA_tipo(actorType);
+                                    }
+
+                                    if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id") == null)) {
+                                        String actorId = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.id").getAsString();
+                                        actor.setA_id_real(actorId);
+                                    }
+                                    String actorUser = "";
+                                    if (!(gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId") == null)) {
+                                        actorUser = gsonObj.getAsJsonObject("actor").getAsJsonObject("extensions").get("bb:user.externalId").getAsString();
                                         actor.setA_usuario(actorUser);
                                     }
 
@@ -256,10 +388,11 @@ public class CargaController {
                                     if (!(gsonObj.getAsJsonObject("membership") == null)) {
 
                                         Role roles = new Role();
-                                        Boolean flag_role = true;
+                                        Boolean flag_rol = true;
 
                                         JsonArray data = gsonObj.getAsJsonObject("membership").get("roles").getAsJsonArray();
                                         List rol = new ArrayList();
+                                        Collection<Role> roleCollection = new ArrayList<>();
 
                                         for (JsonElement event : data) {
                                             rol.add(event.getAsString());
@@ -272,16 +405,21 @@ public class CargaController {
                                         for (int i = 0; i < rolesList.size(); i++) {
                                             if (rolesList.get(i).getR_rol().equals(roles.getR_rol())) {
                                                 idRol = rolesList.get(i).getR_id();
-                                                flag_role = false;
+                                                roleCollection.add(rolesList.get(i));
+                                                actor.setA_rol(roleCollection);
+                                                flag_rol = false;
                                                 break;
                                             }
                                         }
 
-                                        if (flag_role) {
+                                        if (flag_rol) {
                                             roleService.guardarRol(roles);
+                                            rolesList = roleService.buscarTodos();
                                             for (int i = 0; i < rolesList.size(); i++) {
                                                 if (rolesList.get(i).getR_rol().equals(roles.getR_rol())) {
                                                     idRol = rolesList.get(i).getR_id();
+                                                    roleCollection.add(rolesList.get(i));
+                                                    actor.setA_rol(roleCollection);
                                                     break;
                                                 }
                                             }
@@ -289,8 +427,19 @@ public class CargaController {
 
                                         if (flag_actor) {
                                             actor.setA_roles(roles.getR_rol());
+                                            actor.setA_interacciones(1);
                                             if (action.equals("Submitted")) {
                                                 actor.setA_trabajosTerminados(1);
+                                                actividad.setActivity_actors_comleted(activities_completed);
+                                                List<String> nombres = new ArrayList<>();
+                                                if (actividad.getActivity_personas() != null){
+                                                    nombres = actividad.getActivity_personas();
+                                                    nombres.add(actor.getA_usuario());
+                                                }else{
+                                                    nombres.add(actor.getA_usuario());
+                                                }
+                                                actividad.setActivity_personas(nombres);
+                                                actividadService.actualizarActividad(actividad);
                                             }
                                             actor.setA_ultimaConcexion(dateTime);
                                             actorService.guardarActor(actor);
@@ -305,8 +454,20 @@ public class CargaController {
                                             }
                                         } else {
                                             actor = actorService.buscarActorPorId(id_actor);
+                                            actor.setA_interacciones(actor.getA_interacciones() + 1);
                                             if (action.equals("Submitted")) {
                                                 actor.setA_trabajosTerminados(actor.getA_trabajosTerminados() + 1);
+                                                activities_completed.add(actor);
+                                                actividad.setActivity_actors_comleted(activities_completed);
+                                                List<String> nombres = new ArrayList<>();
+                                                if (actividad.getActivity_personas() != null){
+                                                    nombres = actividad.getActivity_personas();
+                                                    nombres.add(actor.getA_usuario());
+                                                }else{
+                                                    nombres.add(actor.getA_usuario());
+                                                }
+                                                actividad.setActivity_personas(nombres);
+                                                actividadService.actualizarActividad(actividad);
                                             }
                                             if (actor.getA_ultimaConcexion().isBefore(dateTime)) {
                                                 actor.setA_ultimaConcexion(dateTime);
@@ -321,13 +482,56 @@ public class CargaController {
                                             }
                                         }
                                     }
-                                }
+                                    boolean existe_fecha = false;
+                                    boolean existe_actor = false;
+                                    Long date_id = null;
 
+                                    for (int i = 0; i < datetimes.size(); i++) {
+                                        if (datetimes.get(i).getDate_fecha().equals(dateTime.toString().substring(0,10))) {
+                                            existe_fecha = true;
+                                            date_id = datetimes.get(i).getDate_id();
+                                            break;
+                                        }
+                                    }
+
+                                    if (existe_fecha == false) {
+                                        String fecha_date = dateTime.toString().substring(0,10);
+                                        datetime.setDate_fecha(fecha_date);
+                                        List<String> conectadosS = new ArrayList<>();
+                                        List<Actor> conectadosA = new ArrayList<>();
+                                        conectadosS.add(actorUser);
+                                        conectadosA.add(actor);
+                                        datetime.setDate_personas(conectadosS);
+                                        datetime.setDate_personas_conectadas(conectadosA);
+                                        datetime.setDate_personasString(conectadosS.toString());
+                                        dateTimeService.actualizarDateTime(datetime);
+                                    } else {
+                                        datetime = dateTimeService.buscarDateTimePorId(date_id);
+                                        List<String> personasLista = datetime.getDate_personas();
+                                        for (int i = 0; i < personasLista.size(); i++) {
+                                            if (personasLista.get(i).equals(actorUser)) {
+                                                existe_actor = true;
+                                                break;
+                                            }
+                                        }
+                                        if (existe_actor == false) {
+                                            List<String> conectadosS = datetime.getDate_personas();
+                                            List<Actor> conectadosA = datetime.getDate_personas_conectadas();
+                                            conectadosS.add(actorUser);
+                                            conectadosA.add(actor);
+                                            datetime.setDate_personas(conectadosS);
+                                            datetime.setDate_personas_conectadas(conectadosA);
+                                            datetime.setDate_personasString(conectadosS.toString());
+                                        }
+                                        dateTimeService.actualizarDateTime(datetime);
+                                    }
+                                }
                                 cursoService.actualizarCurso(curso);
 
 
                             }
                         }
+                        eventoService.guardarEvento(evento);
 
 
 

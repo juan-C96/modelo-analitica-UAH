@@ -36,18 +36,8 @@ public class ActorController {
     @PutMapping("/actoresU")
     public void actualizarActor(@RequestBody Actor actor) {
         actorService.actualizarActor(actor);
-/*
-        Actor actor = iActorService.getActorById(actorDetails.getActor_id());
-        if (actor != null) {
-            actor.setName(actorDetails.getName());
-            actor.setF_born(actorDetails.getF_born());
-            actor.setCountry(actorDetails.getCountry());
-            iActorService.updateActor(actor);
-        }else{
-            iActorService.saveActor(actorDetails);
-        }
-        return ResponseEntity.ok().build();*/
     }
+
     @DeleteMapping("/actores/{a_id}")
     public void eliminarActor(@PathVariable("a_id") Long a_id) {
         actorService.eliminarActor(a_id);

@@ -58,7 +58,7 @@
         <li class="nav-item">
             <a class="nav-link" th:href="@{/ddias}">
                 <i class="fas fa-fw fa-calendar-alt"></i>
-                <span>Actividades</span></a>
+                <span>Conexiones por días</span></a>
         </li>
 
         <li class="nav-item">
@@ -107,7 +107,7 @@
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Académico</span>
                             <i class="fa rounded-circle fa-user"></i>
                         </a>
                         <!-- Dropdown - User Information -->
@@ -150,16 +150,22 @@
                                             <thead>
                                             <tr>
                                                 <th>Número de curso</th>
+                                                <th>Nombre de curso</th>
+                                                <th>Fecha de inicio</th>
                                                 <th>Número de Actividades</th>
                                                 <th>Tiempo en Horas</th>
+                                                <th>Semanas del curso</th>
                                                 <th>Personas</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <tr th:each="curso: ${cursos}">
                                                 <td th:text="${curso.c_numero}"></td>
+                                                <td >Desarrollo de Software Avanzado</td>
+                                                <td th:text="${curso.c_fechaInicio}"></td>
                                                 <td th:text="${curso.c_numero_actividades}"></td>
                                                 <td th:text="${curso.c_tiempo_horas}"></td>
+                                                <td th:text="${curso.c_tiempo_horas / 168}"></td>
                                                 <td th:text="${curso.c_personas}"></td>
                                             </tr>
                                             </tbody>

@@ -58,7 +58,7 @@
         <li class="nav-item">
             <a class="nav-link" th:href="@{/ddias}">
                 <i class="fas fa-fw fa-calendar-alt"></i>
-                <span>Actividades</span></a>
+                <span>Conexiones por días</span></a>
         </li>
 
         <li class="nav-item">
@@ -107,7 +107,7 @@
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Académico</span>
                             <i class="fa rounded-circle fa-user"></i>
                         </a>
                         <!-- Dropdown - User Information -->
@@ -153,24 +153,42 @@
                                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                             <thead>
                                             <tr>
-                                                <th>UUID</th>
-                                                <th>Accion</th>
-                                                <th>ID-real</th>
                                                 <th>Datetime</th>
                                                 <th>Tipo</th>
-                                                <th>Objeto</th>
+                                                <th>Accion</th>
                                                 <th>Usuario</th>
+                                                <th>Objeto</th>
+                                                <th>Origen</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <tr th:each="evento: ${eventos}">
-                                                <td th:text="${evento.e_uuid}"></td>
-                                                <td th:text="${evento.e_accion}"></td>
-                                                <td th:text="${evento.e_uuid_real}"></td>
                                                 <td th:text="${evento.e_datetime}"></td>
                                                 <td th:text="${evento.e_tipo}"></td>
-                                                <td th:text="${evento.e_objeto}"></td>
+                                                <td th:text="${evento.e_accion}"></td>
                                                 <td th:text="${evento.e_usuarios}"></td>
+                                                <td th:if="${evento.e_accion} == 'Started'">
+                                                    <p th:text="${evento.e_objeto}"></p>
+                                                    <p th:text="'Tipo: ' + ${evento.e_objeto_type}"></p>
+                                                    <p th:text="'maxAttempts: ' + ${evento.e_objeto_maxAttempts}"></p>
+                                                    <p th:text="'maxSubmits: ' + ${evento.e_objeto_maxSubmits}"></p>
+                                                    <p th:text="'maxScore: ' + ${evento.e_objeto_maxScore}"></p>
+                                                </td>
+                                                <td th:if="${evento.e_accion} == 'Submitted'">
+                                                    <p th:text="${evento.e_objeto}"></p>
+                                                    <p th:text="'Tipo: ' + ${evento.e_objeto_type}"></p>
+                                                    <p th:text="'maxAttempts: ' + ${evento.e_objeto_maxAttempts}"></p>
+                                                    <p th:text="'maxSubmits: ' + ${evento.e_objeto_maxSubmits}"></p>
+                                                    <p th:text="'maxScore: ' + ${evento.e_objeto_maxScore}"></p>
+                                                </td>
+                                                <td th:if="${evento.e_accion} == 'Viewed'">
+                                                    <p th:text="${evento.e_objeto}"></p>
+                                                    <p th:text="'Tipo: ' + ${evento.e_target_generated}"></p>
+                                                </td>
+                                                <td>
+                                                    <p th:text="${evento.e_edApp}"></p>
+                                                    <p th:text="${evento.e_edApp_ip}"></p>
+                                                </td>
                                             </tr>
                                             </tbody>
                                         </table>

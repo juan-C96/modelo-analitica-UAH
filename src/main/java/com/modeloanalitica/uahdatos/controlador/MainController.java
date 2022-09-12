@@ -63,6 +63,7 @@ public class MainController {
             model.addAttribute("actividades", curso.getC_numero_actividades());
             model.addAttribute("actividades_terminadas", curso.getC_numero_actividades_terminadas());
             model.addAttribute("n_estudiantes", estudiantes.size());
+            model.addAttribute("actores", actorService.buscarTodos().size());
 
             List<String> fechas = new ArrayList<>();
             for (int i = 0; i < datetimes.size(); i++) {
@@ -89,6 +90,7 @@ public class MainController {
             model.addAttribute("actividades", 0);
             model.addAttribute("actividades_terminadas", 0);
             model.addAttribute("n_estudiantes", 0);
+            model.addAttribute("actores", 0);
         }
 
 

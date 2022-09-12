@@ -108,7 +108,6 @@ public class CargaController {
 
                         Evento evento = new Evento();
 
-                        List<Evento> eventos = eventoService.buscarTodos();
                         List<Datetime> datetimes = dateTimeService.buscarTodos();
                         List<Curso> cursos = cursoService.buscarTodos();
                         List<Actor> actores = actorService.buscarTodos();
@@ -116,16 +115,58 @@ public class CargaController {
                         List<Actividad> actividades = actividadService.buscarTodos();
 
                         String action = "";
+                        String e_object = "";
+                        String e_target_generated = "";
+                        String e_endApp_ip = "";
 
-                        String type = gsonObj.get("type").getAsString();
-                        String id = gsonObj.get("id").getAsString();
                         if (!(gsonObj.get("action") == null)) {
                             action = gsonObj.get("action").getAsString();
                         }
 
+                        String type = gsonObj.get("type").getAsString();
+                        String id = gsonObj.get("id").getAsString();
+                        String e_curso = gsonObj.getAsJsonObject("group").get("courseNumber").getAsString();
+                        if(!(gsonObj.getAsJsonObject("object") == null)){
+                            if (!(gsonObj.getAsJsonObject("object").get("name") == null)) {
+                                e_object = gsonObj.getAsJsonObject("object").get("name").getAsString();
+                            } else {
+                                if(!(gsonObj.getAsJsonObject("object").get("type") == null)) {
+                                    e_object = gsonObj.getAsJsonObject("object").get("type").getAsString();
+                                }
+                            }
+                            if(!(gsonObj.getAsJsonObject("object").get("type") == null)) {
+                                String e_object_type = gsonObj.getAsJsonObject("object").get("type").getAsString();
+                                evento.setE_objeto_type(e_object_type);
+                            }
+                        }
+                        evento.setE_objeto(e_object);
+                        if(action.equals("Started") || action.equals("Submitted")){
+                            if(!(gsonObj.getAsJsonObject("object") == null)) {
+                                String e_maxAttempts = gsonObj.getAsJsonObject("object").get("maxAttempts").getAsString();
+                                String e_maxSubmits = gsonObj.getAsJsonObject("object").get("maxSubmits").getAsString();
+                                String e_maxScore = gsonObj.getAsJsonObject("object").get("maxScore").getAsString();
+                                e_target_generated = gsonObj.getAsJsonObject("generated").get("type").getAsString();
+                                e_endApp_ip = gsonObj.getAsJsonObject("edApp").getAsJsonObject("extensions").get("bb:request.headers.ipAddress").getAsString();
+                                evento.setE_objeto_maxAttempts(e_maxAttempts);
+                                evento.setE_objeto_maxSubmits(e_maxSubmits);
+                                evento.setE_objeto_maxScore(e_maxScore);
+                                evento.setE_target_generated(e_target_generated);
+                                evento.setE_edApp_ip(e_endApp_ip);
+                            }
+                        } else {
+                            if(!(gsonObj.getAsJsonObject("target").get("type") == null)){
+                                e_target_generated = gsonObj.getAsJsonObject("target").get("type").getAsString();
+                                evento.setE_target_generated(e_target_generated);
+                            }
+                        }
+                        if(!(gsonObj.getAsJsonObject("edApp").get("type") == null)){
+                            String e_edApp_type = gsonObj.getAsJsonObject("edApp").get("type").getAsString();
+                            evento.setE_edApp(e_edApp_type);
+                        }
+
                         evento.setE_tipo(type);
                         evento.setE_uuid_real(id);
-                        evento.setE_objeto(file.getName());
+                        evento.setE_grupos(e_curso);
                         if (!action.equals("")) {
                             evento.setE_accion(action);
                         }

@@ -8,56 +8,76 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "t_evento")
-public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
+public class Evento {
     @Id
-    @Column(name = "e_uuid", nullable = false) //La aplicación emisora DEBE aprovisionar el evento con un UUID. SE DEBE generar un UUID de la versión 4. El UUID DEBE expresarse como un URN usando la forma "urn:uuid:<UUID>" por [RFC4122].
+    @Column(name = "e_uuid", nullable = false)
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long e_uuid;
 
-    @Column(name = "e_uuid_real", nullable = false) //La aplicación emisora DEBE aprovisionar el evento con un UUID. SE DEBE generar un UUID de la versión 4. El UUID DEBE expresarse como un URN usando la forma "urn:uuid:<UUID>" por [RFC4122].
+    @Column(name = "e_uuid_real", nullable = false)
     private String e_uuid_real;
 
-    @Column(name = "e_tipo") //Un valor de cadena correspondiente al Término definido para el evento en el documento de contexto JSON-LD de IMS Caliper externo. Para un evento genérico, establezca el valor de cadena Evento. Si se crea un subtipo de Entidad, establezca el término correspondiente al subtipo utilizado, por ejemplo, NavigationEvent.typetype
+    @Column(name = "e_tipo")
     private String e_tipo;
 
-    @Column(name = "e_perfil") // Un valor de cadena correspondiente al valor de Término de perfil definido para el perfil que rige las reglas de interpretación de este evento. El rango de valores de perfil se limita al conjunto de perfiles descritos en esta especificación y a cualquier especificación de extensión de perfil que amplíe esta especificación. Solo se puede especificar un valor de Término de perfil por Evento. Para un evento genérico, establezca el valor de la propiedad en el término de cadena GeneralProfile.profile
-    private String e_perfil;
+    @Column(name = "e_edApp")
+    private String e_edApp;
 
-    @Column(name = "e_accion") // La acción o predicado que une al actor o sujeto al objeto. El rango se limita al conjunto de acciones descritas en esta especificación o perfiles asociados y puede estar aún más limitado por el tipo de evento elegido. Solo se puede especificar un Término por Evento.actionaction
+    @Column(name = "e_edApp_ip")
+    private String e_edApp_ip;
+
+    @Column(name = "e_accion")
     private String e_accion;
 
-    @Column(name = "e_objeto") // Entidad que comprende el objeto de la interacción. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI del objeto.object
+    @Column(name = "e_objeto")
     private String e_objeto;
 
-    @Column(name = "e_datetime")
-    @DateTimeFormat(pattern = "YYYY-MM-DD:mm:ss") // Un valor de fecha y hora ISO 8601 expresado con precisión de milisegundos que indica cuándo ocurrió el evento. El valor DEBE expresarse utilizando el formato AAAA-MM-DDTHH:mm:ss. SSSZ establecido en UTC sin desplazamiento especificado.
-    private LocalDateTime e_datetime;
+    @Column(name = "e_objeto_type")
+    private String e_objeto_type;
 
-    @Column(name = "e_sesion") // La sesión de usuario actual. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI de la sesión.session
-    private String e_sesion;
+    @Column(name = "e_objeto_maxScore")
+    private String e_objeto_maxScore;
+
+    @Column(name = "e_objeto_maxAttempts")
+    private String e_objeto_maxAttempts;
+
+    @Column(name = "e_objeto_maxSubmits")
+    private String e_objeto_maxSubmits;
+
+    @Column(name = "e_target_generated")
+    private String e_target_generated;
+
+    @Column(name = "e_datetime")
+    @DateTimeFormat(pattern = "YYYY-MM-DD:mm:ss")
+    private LocalDateTime e_datetime;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "t_evento_actor", joinColumns = @JoinColumn(name = "e_uuid", referencedColumnName = "e_uuid"), inverseJoinColumns = @JoinColumn(name = "a_id", referencedColumnName = "a_id"))
-    Actor e_actor; // El Agente que inició el Evento, por lo general, aunque no siempre una Persona. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI del actor.action
+    Actor e_actor;
 
-    @Column(name = "e_usuarios") // La sesión de usuario actual. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI de la sesión.session
+    @Column(name = "e_usuarios")
     private String e_usuarios;
 
-    @Column(name = "e_grupos") // La sesión de usuario actual. El valor DEBE expresarse como un objeto o como una cadena correspondiente al IRI de la sesión.session
+    @Column(name = "e_grupos")
     private String e_grupos;
 
     public Evento() {
     }
 
-    public Evento(Long e_uuid, String e_uuid_real, String e_tipo, String e_perfil, String e_accion, String e_objeto, LocalDateTime e_datetime, String e_sesion, Actor e_actor, String e_usuarios, String e_grupos) {
+    public Evento(Long e_uuid, String e_uuid_real, String e_tipo, String e_edApp, String e_edApp_ip, String e_accion, String e_objeto, String e_objeto_type, String e_objeto_maxScore, String e_objeto_maxAttempts, String e_objeto_maxSubmits, String e_target_generated, LocalDateTime e_datetime, Actor e_actor, String e_usuarios, String e_grupos) {
         this.e_uuid = e_uuid;
         this.e_uuid_real = e_uuid_real;
         this.e_tipo = e_tipo;
-        this.e_perfil = e_perfil;
+        this.e_edApp = e_edApp;
+        this.e_edApp_ip = e_edApp_ip;
         this.e_accion = e_accion;
         this.e_objeto = e_objeto;
+        this.e_objeto_type = e_objeto_type;
+        this.e_objeto_maxScore = e_objeto_maxScore;
+        this.e_objeto_maxAttempts = e_objeto_maxAttempts;
+        this.e_objeto_maxSubmits = e_objeto_maxSubmits;
+        this.e_target_generated = e_target_generated;
         this.e_datetime = e_datetime;
-        this.e_sesion = e_sesion;
         this.e_actor = e_actor;
         this.e_usuarios = e_usuarios;
         this.e_grupos = e_grupos;
@@ -85,14 +105,6 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
 
     public void setE_tipo(String e_tipo) {
         this.e_tipo = e_tipo;
-    }
-
-    public String getE_perfil() {
-        return e_perfil;
-    }
-
-    public void setE_perfil(String e_perfil) {
-        this.e_perfil = e_perfil;
     }
 
     public Actor getE_actor() {
@@ -127,14 +139,6 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
         this.e_datetime = e_datetime;
     }
 
-    public String getE_sesion() {
-        return e_sesion;
-    }
-
-    public void setE_sesion(String e_sesion) {
-        this.e_sesion = e_sesion;
-    }
-
     public String getE_usuarios() {
         return e_usuarios;
     }
@@ -151,16 +155,72 @@ public class Evento {   // https://www.imsglobal.org/spec/caliper/v1p2#event
         this.e_grupos = e_grupos;
     }
 
+    public String getE_edApp() {
+        return e_edApp;
+    }
+
+    public void setE_edApp(String e_edApp) {
+        this.e_edApp = e_edApp;
+    }
+
+    public String getE_edApp_ip() {
+        return e_edApp_ip;
+    }
+
+    public void setE_edApp_ip(String e_edApp_ip) {
+        this.e_edApp_ip = e_edApp_ip;
+    }
+
+    public String getE_objeto_type() {
+        return e_objeto_type;
+    }
+
+    public void setE_objeto_type(String e_objeto_type) {
+        this.e_objeto_type = e_objeto_type;
+    }
+
+    public String getE_objeto_maxScore() {
+        return e_objeto_maxScore;
+    }
+
+    public void setE_objeto_maxScore(String e_objeto_maxScore) {
+        this.e_objeto_maxScore = e_objeto_maxScore;
+    }
+
+    public String getE_objeto_maxAttempts() {
+        return e_objeto_maxAttempts;
+    }
+
+    public void setE_objeto_maxAttempts(String e_objeto_maxAttempts) {
+        this.e_objeto_maxAttempts = e_objeto_maxAttempts;
+    }
+
+    public String getE_objeto_maxSubmits() {
+        return e_objeto_maxSubmits;
+    }
+
+    public void setE_objeto_maxSubmits(String e_objeto_maxSubmits) {
+        this.e_objeto_maxSubmits = e_objeto_maxSubmits;
+    }
+
+    public String getE_target_generated() {
+        return e_target_generated;
+    }
+
+    public void setE_target_generated(String e_target_generated) {
+        this.e_target_generated = e_target_generated;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Evento evento = (Evento) o;
-        return Objects.equals(e_uuid, evento.e_uuid) && Objects.equals(e_tipo, evento.e_tipo) && Objects.equals(e_perfil, evento.e_perfil) && Objects.equals(e_accion, evento.e_accion) && Objects.equals(e_objeto, evento.e_objeto) && Objects.equals(e_datetime, evento.e_datetime) && Objects.equals(e_sesion, evento.e_sesion) && Objects.equals(e_actor, evento.e_actor);
+        return Objects.equals(e_uuid, evento.e_uuid) && Objects.equals(e_uuid_real, evento.e_uuid_real) && Objects.equals(e_tipo, evento.e_tipo) && Objects.equals(e_edApp, evento.e_edApp) && Objects.equals(e_edApp_ip, evento.e_edApp_ip) && Objects.equals(e_accion, evento.e_accion) && Objects.equals(e_objeto, evento.e_objeto) && Objects.equals(e_objeto_type, evento.e_objeto_type) && Objects.equals(e_objeto_maxScore, evento.e_objeto_maxScore) && Objects.equals(e_objeto_maxAttempts, evento.e_objeto_maxAttempts) && Objects.equals(e_objeto_maxSubmits, evento.e_objeto_maxSubmits) && Objects.equals(e_target_generated, evento.e_target_generated) && Objects.equals(e_datetime, evento.e_datetime) && Objects.equals(e_actor, evento.e_actor) && Objects.equals(e_usuarios, evento.e_usuarios) && Objects.equals(e_grupos, evento.e_grupos);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(e_uuid, e_tipo, e_perfil, e_accion, e_objeto, e_datetime, e_sesion, e_actor);
+        return Objects.hash(e_uuid, e_uuid_real, e_tipo, e_edApp, e_edApp_ip, e_accion, e_objeto, e_objeto_type, e_objeto_maxScore, e_objeto_maxAttempts, e_objeto_maxSubmits, e_target_generated, e_datetime, e_actor, e_usuarios, e_grupos);
     }
 }

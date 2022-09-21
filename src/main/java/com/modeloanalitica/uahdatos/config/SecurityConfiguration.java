@@ -1,6 +1,6 @@
 package com.modeloanalitica.uahdatos.config;
 
-import com.modeloanalitica.uahdatos.servicio.IActorService;
+import com.modeloanalitica.uahdatos.servicio.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     @Lazy
-    private IActorService actorService;
+    private IUserService userService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -29,7 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
-        auth.setUserDetailsService(actorService);
+        auth.setUserDetailsService(userService);
         auth.setPasswordEncoder(passwordEncoder());
         return auth;
     }
@@ -45,7 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers(resources).permitAll()
-                .antMatchers("/").permitAll()
+                //.antMatchers("/registration").permitAll()
                 //.antMatchers("/**").hasAnyAuthority("Instructor")
                 .and()
                 .formLogin()

@@ -30,28 +30,40 @@
         <div class="card-body p-0">
             <!-- Nested Row within Card Body -->
             <div class="row">
-                <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
+                <div class="col-lg-5 d-none d-lg-block"></div>
                 <div class="col-lg-7">
                     <div class="p-5">
                         <div class="text-center">
                             <h1 class="h4 text-gray-900 mb-4">Crear una cuenta</h1>
                         </div>
-                        <form th:action="@{/registration}" method="post" th:object="${actor}">
+                        <form th:action="@{/registration}" method="post" th:object="${user}">
                             <div class="form-group">
-                                <input type="email" class="form-control form-control-user" id="a_email"
-                                       placeholder="Email" required autofocus="autofocus"/>  <!--th:field="*{a_email}"-->
+                                <input type="text" class="form-control form-control-user" id="name"
+                                       placeholder="Nombre" required autofocus="autofocus" th:field="*{name}"/>
                             </div>
                             <div class="form-group">
-                                <input type="password" class="form-control form-control-user" id="a_password"
-                                       placeholder="Password" required autofocus="autofocus"/>  <!--th:field="*{a_password}"-->
+                                <input type="email" class="form-control form-control-user" id="email"
+                                       placeholder="Email" required autofocus="autofocus" th:field="*{email}"/>
                             </div>
-                            <a th:href="@{/}" class="btn btn-primary btn-user btn-block">
+                            <div class="form-group">
+                                <input type="password" class="form-control form-control-user" id="password"
+                                       placeholder="Password" required autofocus="autofocus" th:field="*{password}"/>
+                            </div>
+                            <div class="form-group">
+                                <select name="select" class="form-control form-control-user" id="user_curso"
+                                        placeholder="Curso" required autofocus="autofocus" th:field="*{user_curso}">
+                                    <option value="value1" selected>26L1H21</option>
+                                    <option value="value2" disabled>Other course</option>
+                                    <option value="value3" disabled>Other course</option>
+                                </select>
+                            </div>
+                            <button th:href="@{/}" type="submit" class="btn btn-primary btn-user btn-block">
                                 Registrar cuenta
-                            </a>
+                            </button>
                         </form>
                         <hr>
                         <div class="text-center">
-                            <a class="small" href="forgot-password.html">Forgot Password?</a>
+                            <a class="small" th:href="@{/login}">Forgot Password?</a>
                         </div>
                         <div class="text-center">
                             <a class="small" th:href="@{/login}">¿Tienes una cuenta?, ¡inicia sesión acá!</a>

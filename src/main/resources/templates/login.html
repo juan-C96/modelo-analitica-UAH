@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 
 <head>
 
@@ -35,16 +35,16 @@
                 <div class="card-body p-0">
                     <!-- Nested Row within Card Body -->
                     <div class="row">
-                        <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                        <div class="col-lg-6 d-none d-lg-block"></div>
                         <div class="col-lg-6">
                             <div class="p-5">
                                 <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                                    <h1 class="h4 text-gray-900 mb-4">Bienvenido</h1>
                                 </div>
                                 <form class="user" th:action="@{/login}" method="post">
                                     <div class="form-group">
                                         <input type="text" class="form-control form-control-user"
-                                               name="username" placeholder="Enter Username">
+                                               name="username" placeholder="Email">
                                     </div>
                                     <div class="form-group">
                                         <input type="password" class="form-control form-control-user"
@@ -57,13 +57,13 @@
                                                 Me</label>
                                         </div>
                                     </div>
-                                    <input class="btn btn-primary btn-user btn-block" type="submit" name="login-submit" id="login-submit"
-                                       value="Iniciar sesión"
-                                    </input>
+                                    <button class="btn btn-primary btn-user btn-block" type="submit" name="login-submit" id="login-submit"
+                                       >Iniciar sesión
+                                    </button>
                                 </form>
                                 <hr>
                                 <div class="text-center">
-                                    <a class="small" href="forgot-password.html">Forgot Password?</a>
+                                    <a class="small" th:href="@{/login}">Forgot Password?</a>
                                 </div>
                                 <div class="text-center">
                                     <a class="small" th:href="@{/registration}">Crea una cuenta!</a>
